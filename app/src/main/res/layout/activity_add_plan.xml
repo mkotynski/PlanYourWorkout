@@ -34,10 +34,23 @@
         android:layout_height="wrap_content"
         android:id="@+id/number_picker_priority"
         />
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Choosen exercises:"
+        />
+    <TextView
+        android:id="@+id/text_view_choosen_exercises"
+        android:layout_marginTop="10dp"
+        android:text="You haven't choosen anything yet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
     <Button
         android:id="@+id/button_add_exercises2plan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="Add exercises to your workout plan" />
 </LinearLayout>

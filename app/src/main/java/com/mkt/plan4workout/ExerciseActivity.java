@@ -86,6 +86,11 @@ public class ExerciseActivity extends AppCompatActivity {
                 intent.putExtra(AddEditPlanActivity.EXTRA_PRIORITY, exercise.getType());
                 startActivityForResult(intent, EDIT_PLAN_REQUEST);
             }
+
+            @Override
+            public void onItemViewClick(View itemView,Exercise exercise) {
+
+            }
         });
     }
 

@@ -1,5 +1,6 @@
 package com.mkt.plan4workout.Exercise;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         private TextView textViewDescription;
         private TextView textViewPriority;
 
-        public ExerciseHolder(View itemView) {
+        public ExerciseHolder(final View itemView) {
             super(itemView);
             textViewTitle = itemView.findViewById(R.id.text_view_title);
             textViewDescription = itemView.findViewById(R.id.text_view_description);
@@ -65,6 +66,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     int position = getAdapterPosition();
                     if (listener != null && position != RecyclerView.NO_POSITION) {
                         listener.onItemClick(exercises.get(position));
+                        listener.onItemViewClick(itemView,exercises.get(position));
                     }
                 }
             });
@@ -73,6 +75,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     public interface OnItemClickListener {
         void onItemClick(Exercise exercise);
+        void onItemViewClick(View itemView,Exercise exercise);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
