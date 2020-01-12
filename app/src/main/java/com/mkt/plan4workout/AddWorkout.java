@@ -69,4 +69,10 @@ public class AddWorkout extends AppCompatActivity {
         setResult(1, data);
         finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        setResult(0);
+        finish();
+    }
 }

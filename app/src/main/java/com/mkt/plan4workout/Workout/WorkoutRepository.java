@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import com.mkt.plan4workout.AppDatabase;
+import com.mkt.plan4workout.Plan.Plan;
+import com.mkt.plan4workout.Plan.PlanRepository;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -35,6 +37,16 @@ public class WorkoutRepository {
 
     public void deleteAllWorkouts(){
         new DeleteAllWorkoutsAsyncTask(workoutDao).execute();
+    }
+
+    public Workout getPlan(int id) throws ExecutionException, InterruptedException {
+        GetWorkoutAsyncTask asyncTask = new GetWorkoutAsyncTask(workoutDao, id);
+        return asyncTask.execute().get();
+    }
+
+    public Workout getPlanByDate(String date) throws ExecutionException, InterruptedException {
+        GetWorkoutByDateAsyncTask asyncTask = new GetWorkoutByDateAsyncTask(workoutDao, date);
+        return asyncTask.execute().get();
     }
 
     public LiveData<List<Workout>> getAllWorkouts() {
@@ -99,6 +111,36 @@ public class WorkoutRepository {
         protected Void doInBackground(Void... voids) {
             workoutDao.deleteAllWorkouts();
             return null;
+        }
+    }
+
+    private static class GetWorkoutAsyncTask extends AsyncTask<Void, Void, Workout> {
+        private WorkoutDao workoutDao;
+        private int id;
+
+        private GetWorkoutAsyncTask(WorkoutDao workoutDao, int id){
+            this.workoutDao = workoutDao;
+            this.id = id;
+        }
+
+        @Override
+        protected Workout doInBackground(Void... voids) {
+            return workoutDao.getWorkout(id);
+        }
+    }
+
+    private static class GetWorkoutByDateAsyncTask extends AsyncTask<Void, Void, Workout> {
+        private WorkoutDao workoutDao;
+        private String date;
+
+        private GetWorkoutByDateAsyncTask(WorkoutDao workoutDao, String date){
+            this.workoutDao = workoutDao;
+            this.date = date;
+        }
+
+        @Override
+        protected Workout doInBackground(Void... voids) {
+            return workoutDao.getWorkoutByDate(date);
         }
     }
 }

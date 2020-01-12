@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,8 +33,10 @@ import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlanViewModel;
 import com.mkt.plan4workout.Plan.Plan;
 import com.mkt.plan4workout.Plan.PlanAdapter;
 import com.mkt.plan4workout.Plan.PlanViewModel;
+import com.mkt.plan4workout.Workout.WorkoutViewModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +47,8 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
     private PlanViewModel planViewModel;
     private ExerciseToPlanViewModel exerciseToPlanViewModel;
     private MainActivityViewModel mainViewModel;
-
+    private WorkoutViewModel workoutViewModel;
+    Calendar calendar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
         planViewModel = ViewModelProviders.of(this).get(PlanViewModel.class);
         exerciseToPlanViewModel = ViewModelProviders.of(this).get(ExerciseToPlanViewModel.class);
         mainViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+        workoutViewModel = ViewModelProviders.of(this).get(WorkoutViewModel.class);
 
         planViewModel.getAllPlans().observe(this, new Observer<List<Plan>>() {
             @Override
@@ -132,6 +138,24 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
             }
 
         });
+        calendar = Calendar.getInstance();
+        try {
+            System.out.println(calendar.getTime().toString());
+            String timer[] = calendar.getTime().toString().split(" ");
+            timer[3] = "00:00:00";
+            String date = Arrays.toString(timer);
+            date = date.replace(",", "");
+            date = date.substring(1,date.lastIndexOf("]"));
+            System.out.println(date);
+            if(workoutViewModel.getWorkoutByDate(date) != null){
+                Toast.makeText(this, "DZIEN TRENINGOWY", Toast.LENGTH_SHORT).show();
+                System.out.println("DZIEN TRENINGOWY");
+            }
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -331,4 +355,5 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
+
 }
