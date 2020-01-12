@@ -8,6 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mkt.plan4workout.Exercise.Exercise;
+import com.mkt.plan4workout.Exercise.ExerciseAdapterPick;
 import com.mkt.plan4workout.R;
 
 import java.util.ArrayList;
@@ -72,9 +74,11 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanHolder> {
 
     public interface OnItemClickListener {
         void onItemClick(Plan plan);
+        void onItemViewClick(View itemView, Plan plan);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
+
 }

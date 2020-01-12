@@ -7,6 +7,9 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import com.mkt.plan4workout.AppDatabase;
+import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlan;
+import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlanDao;
+import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlanRepository;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -37,6 +40,11 @@ public class PlanRepository {
 
     public void deleteAllPlans(){
         new DeleteAllPlansAsyncTask(planDao).execute();
+    }
+
+    public Plan getPlan(int id) throws ExecutionException, InterruptedException {
+        GetPlanAsyncTask asyncTask = new GetPlanAsyncTask(planDao, id);
+        return asyncTask.execute().get();
     }
 
     public LiveData<List<Plan>> getAllPlans() {
@@ -102,6 +110,21 @@ public class PlanRepository {
         protected Void doInBackground(Void... voids) {
             planDao.deleteAllPlans();
             return null;
+        }
+    }
+
+    private static class GetPlanAsyncTask extends AsyncTask<Void, Void, Plan> {
+        private PlanDao planDao;
+        private int id;
+
+        private GetPlanAsyncTask(PlanDao planDao, int id){
+            this.planDao = planDao;
+            this.id = id;
+        }
+
+        @Override
+        protected Plan doInBackground(Void... voids) {
+            return planDao.getPlan(id);
         }
     }
 }

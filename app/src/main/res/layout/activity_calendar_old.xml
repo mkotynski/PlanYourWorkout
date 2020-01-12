@@ -20,7 +20,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="48dp"
         />
-
+    
     <LinearLayout
         android:layout_marginTop="46dp"
         android:background="@drawable/bg_calen"

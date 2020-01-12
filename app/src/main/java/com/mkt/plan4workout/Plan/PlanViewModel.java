@@ -35,6 +35,10 @@ public class PlanViewModel extends AndroidViewModel {
         repository.deleteAllPlans();
     }
 
+    public Plan getPlan(int id) throws ExecutionException, InterruptedException {
+        return repository.getPlan(id);
+    }
+
     public LiveData<List<Plan>> getAllPlans() {
         return allPlans;
     }

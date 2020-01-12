@@ -85,17 +85,6 @@ public class AddExerciseToPlan extends AppCompatActivity {
             }
         });
 
-//        addExercisesToPlanViewModel.getCurrentExercises().observe(this, new Observer<List<Exercise>>() {
-//            String namesOfExercises = ""; //"You haven't choosen anything yet";
-//            @Override
-//            public void onChanged(List<Exercise> exercises) {
-//                for (Exercise e : exercises) {
-//                    namesOfExercises += e.getName();
-//                }
-//                System.out.println("GOT EXERCISES");
-//                textView.setText(namesOfExercises);
-//            }
-//        });
 
 
         adapter.setOnItemClickListener(new ExerciseAdapterPick.OnItemClickListener() {

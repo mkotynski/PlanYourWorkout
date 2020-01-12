@@ -9,11 +9,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CalendarActivity"/>
+        <activity android:name=".AddWorkout"></activity>
         <activity android:name=".AddExerciseToPlan" />
         <activity android:name=".ExerciseActivity" />
         <activity android:name=".AddEditPlanActivity" />
         <activity android:name=".AddEditExerciseActivity" />
+        <activity android:name=".MainActivityX" />
+        <activity
+            android:name=".CalendarActivity"
+            android:label="@string/app_name" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

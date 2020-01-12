@@ -38,4 +38,6 @@ public class PlanActivityViewModel extends AndroidViewModel {
 //        listPickExercises = ret;
 //    }
 
+
+
 }

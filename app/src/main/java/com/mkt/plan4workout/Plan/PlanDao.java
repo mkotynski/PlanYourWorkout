@@ -27,4 +27,7 @@ public interface PlanDao {
 
     @Query("SELECT * FROM plan_table ORDER BY id DESC")
     LiveData<List<Plan>> getAllPlans();
+
+    @Query("SELECT * FROM plan_table WHERE id = :idOfPlan")
+    Plan getPlan(int idOfPlan);
 }
