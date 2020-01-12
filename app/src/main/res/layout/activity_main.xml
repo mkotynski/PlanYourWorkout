@@ -15,10 +15,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Exercises" />
+        <Button
+            android:id="@+id/button_calendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/button_exercise"
+            android:text="Calendar" />
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/button_exercise"
+            android:layout_below="@+id/button_calendar"
             android:id="@+id/recycler_view"
             tools:listitem="@layout/plan_item" />
     </RelativeLayout>

@@ -42,7 +42,7 @@ public class ExerciseActivity extends AppCompatActivity {
         buttonAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ExerciseActivity.this, AddEditPlanActivity.class);
+                Intent intent = new Intent(ExerciseActivity.this, AddEditExerciseActivity.class);
                 startActivityForResult(intent, ADD_PLAN_REQUEST);
             }
         });

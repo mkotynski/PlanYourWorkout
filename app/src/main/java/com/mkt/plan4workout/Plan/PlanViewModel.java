@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class PlanViewModel extends AndroidViewModel {
     private PlanRepository repository;
@@ -18,8 +19,8 @@ public class PlanViewModel extends AndroidViewModel {
         allPlans = repository.getAllPlans();
     }
 
-    public void insert(Plan plan) {
-        repository.insert(plan);
+    public Long insert(Plan plan) throws ExecutionException, InterruptedException {
+        return repository.insert(plan);
     }
 
     public void update(Plan plan) {

@@ -6,14 +6,14 @@ import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 
 import com.mkt.plan4workout.AppDatabase;
-import com.mkt.plan4workout.Plan.Plan;
-import com.mkt.plan4workout.Plan.PlanDao;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class ExerciseToPlanRepository {
     private ExerciseToPlanDao e2pDao;
     private LiveData<List<ExerciseToPlan>> allE2p;
+    //private List<ExerciseToPlan> exercisesOfPlan;
 
 
     public ExerciseToPlanRepository(Application application){
@@ -34,8 +34,17 @@ public class ExerciseToPlanRepository {
         new DeleteE2PAsyncTask(e2pDao).execute(e2p);
     }
 
+    public List<ExerciseToPlan> getExercisesOfPlan(int id) throws ExecutionException, InterruptedException {
+        GetExercisesOfPlanAsyncTask asyncTask = new GetExercisesOfPlanAsyncTask(e2pDao, id);
+        return asyncTask.execute().get();
+    }
+
     public void deleteAllE2Ps(){
         new DeleteAllE2PsAsyncTask(e2pDao).execute();
+    }
+
+    public void deleteExercisesOfPlan(int id){
+        new DeleteExercisesOfPlan(e2pDao, id).execute();
     }
 
     public LiveData<List<ExerciseToPlan>> getAllE2p() {
@@ -97,6 +106,38 @@ public class ExerciseToPlanRepository {
             return null;
         }
     }
+
+    private static class GetExercisesOfPlanAsyncTask extends AsyncTask<Void, Void, List<ExerciseToPlan> > {
+        private ExerciseToPlanDao e2pDao;
+        private int id;
+
+        private GetExercisesOfPlanAsyncTask(ExerciseToPlanDao e2pDao, int id){
+            this.e2pDao = e2pDao;
+            this.id = id;
+        }
+
+        @Override
+        protected List<ExerciseToPlan> doInBackground(Void... voids) {
+            return e2pDao.getExercisesOfPlan(id);
+        }
+    }
+
+    private static class DeleteExercisesOfPlan extends AsyncTask<Void, Void, Void> {
+        private ExerciseToPlanDao e2pDao;
+        private int id;
+
+        private DeleteExercisesOfPlan(ExerciseToPlanDao e2pDao, int id){
+            this.e2pDao = e2pDao;
+            this.id = id;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            e2pDao.deleteExercisesOfPlan(id);
+            return null;
+        }
+    }
+
 }
 
 

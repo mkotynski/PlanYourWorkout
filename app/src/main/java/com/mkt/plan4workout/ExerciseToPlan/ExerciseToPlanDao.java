@@ -28,4 +28,10 @@ public interface ExerciseToPlanDao {
 
     @Query("DELETE FROM exercise_2_plan")
     void deleteAlle2p();
+
+    @Query("SELECT * FROM exercise_2_plan WHERE planId = :planId")
+    List<ExerciseToPlan> getExercisesOfPlan(int planId);
+
+    @Query("DELETE FROM exercise_2_plan WHERE planId = :planId")
+    void deleteExercisesOfPlan(int planId);
 }

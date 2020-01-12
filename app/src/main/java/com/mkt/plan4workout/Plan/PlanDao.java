@@ -14,7 +14,7 @@ import java.util.List;
 public interface PlanDao {
 
     @Insert
-    void insert(Plan plan);
+    long insert(Plan plan);
 
     @Update
     void update(Plan plan);

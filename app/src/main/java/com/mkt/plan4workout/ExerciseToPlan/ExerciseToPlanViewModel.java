@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class ExerciseToPlanViewModel extends AndroidViewModel {
     private ExerciseToPlanRepository repository;
@@ -32,6 +33,14 @@ public class ExerciseToPlanViewModel extends AndroidViewModel {
 
     public void deleteAllE2Ps() {
         repository.deleteAllE2Ps();
+    }
+
+    public void deleteExercisesOfPlan(int id) {
+        repository.deleteExercisesOfPlan(id);
+    }
+
+    public List<ExerciseToPlan> getExercisesOfPlan(int id) throws ExecutionException, InterruptedException {
+        return repository.getExercisesOfPlan(id);
     }
 
     public LiveData<List<ExerciseToPlan>> getAllE2Ps() {

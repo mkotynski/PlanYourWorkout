@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -53,20 +54,27 @@ public class AddExerciseToPlan extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
 
+        exerciseViewModel = ViewModelProviders.of(this).get(ExerciseViewModel.class);
+        exercisePickViewModel = ViewModelProviders.of(this).get(ExercisePickViewModel.class);
+
         final ExerciseAdapterPick adapter = new ExerciseAdapterPick();
         recyclerView.setAdapter(adapter);
 
-        //exercisePickViewModel = ViewModelProviders.of(this).get(AddExercisesToPlanViewModel.class);
+        final String values = getIntent().getExtras().getString("exercises");
 
-        exerciseViewModel = ViewModelProviders.of(this).get(ExerciseViewModel.class);
-        exercisePickViewModel = ViewModelProviders.of(this).get(ExercisePickViewModel.class);
+        textView.setText(values);
+
+        exercisePickViewModel.setExercisesList(values);
+
 
         final List<Integer> pick = new ArrayList<>();
 
         exerciseViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
             public void onChanged(List<Exercise> exercises) {
-                adapter.setExercises(exercises,pick);
+                adapter.setExercises(exercises,exercisePickViewModel.getExercisesInteger());
+                exercisePickViewModel.setAllExercises(exercises);
+                exercisePickViewModel.setExercisesList(values);
             }
         });
 
@@ -99,11 +107,17 @@ public class AddExerciseToPlan extends AppCompatActivity {
             public void onItemViewClick(View itemView, Exercise exercise) {
                 if (exercisePickViewModel.isChoosen(exercise)) {
                     exercisePickViewModel.delExercise(exercise);
-                    pick.remove(Integer.valueOf(exercise.getId()));
+                    //pick.remove(Integer.valueOf(exercise.getId()));
+                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorWhite));
+                    TextView title = itemView.findViewById(R.id.text_view_title);
+                    title.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorBlack));
 
                 } else {
                     exercisePickViewModel.addExercise(exercise);
-                    pick.add(Integer.valueOf(exercise.getId()));
+                    //pick.add(Integer.valueOf(exercise.getId()));
+                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorPrimary));
+                    TextView title = itemView.findViewById(R.id.text_view_title);
+                    title.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorWhite));
                 }
             }
         });
@@ -111,8 +125,8 @@ public class AddExerciseToPlan extends AppCompatActivity {
 
     private void saveExercises() {
         Intent data = new Intent();
-//        data.putExtra(EXTRA_EXERCISES, ExercisePickViewModel.listToString());
-//        data.putExtra(EXTRA_EXERCISES_ID, ExercisePickViewModel.idListToString());
+        //data.putExtra(EXTRA_EXERCISES, ExercisePickViewModel.listToString());
+        data.putExtra(EXTRA_EXERCISES_ID, exercisePickViewModel.idListToString());
         setResult(RESULT_OK, data);
         finish();
     }

@@ -2,11 +2,11 @@ package com.mkt.plan4workout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,16 +17,12 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mkt.plan4workout.Exercise.Exercise;
-import com.mkt.plan4workout.Plan.Plan;
-
-import java.util.List;
-
 public class AddEditPlanActivity extends AppCompatActivity {
     public static final String EXTRA_TITLE = "com.mkt.plan4workout.EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION = "com.mkt.plan4workout.EXTRA_DESCRIPTION";
     public static final String EXTRA_PRIORITY = "com.mkt.plan4workout.EXTRA_PRIORITY";
     public static final String EXTRA_ID = "com.mkt.plan4workout.EXTRA_ID";
+    public static final String EXTRA_EXERCISES = "com.mkt.plan4workout.EXTRA_EXERCISES";
 
     public static final int ADD_EXERCISES_REQUEST = 1;
 
@@ -35,7 +31,7 @@ public class AddEditPlanActivity extends AppCompatActivity {
     private NumberPicker numberPickerPriority;
     private Button btnAddExercises;
     private TextView textViewChoosenExercises;
-//    AddExercisesToPlanViewModel addExercisesToPlanViewModel;
+    PlanActivityViewModel planActivityViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,29 +47,17 @@ public class AddEditPlanActivity extends AppCompatActivity {
         numberPickerPriority.setMinValue(1);
         numberPickerPriority.setMaxValue(9);
 
-
-//        addExercisesToPlanViewModel = ViewModelProviders.of(this).get(AddExercisesToPlanViewModel.class);
-//        addExercisesToPlanViewModel.addExercise(new Exercise("name","cateogry", "type", "description"));
-//        addExercisesToPlanViewModel.getCurrentExercises().setValue(addExercisesToPlanViewModel.getChoosenExercises());
-//        addExercisesToPlanViewModel.getCurrentExercises().observe(this, new Observer<List<Exercise>>() {
-//            String namesOfExercises = ""; //"You haven't choosen anything yet";
-//            @Override
-//            public void onChanged(List<Exercise> exercises) {
-//                for (Exercise e : exercises) {
-//                    namesOfExercises += namesOfExercises + e.getName();
-//                }
-//                System.out.println("GOT EXERCISES");
-//                textViewChoosenExercises.setText(namesOfExercises);
-//            }
-//        });
+        planActivityViewModel = ViewModelProviders.of(this).get(PlanActivityViewModel.class);
 
         btnAddExercises.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddEditPlanActivity.this, AddExerciseToPlan.class);
                 Bundle b = new Bundle();
-//                b.putString("name", etName.getText().toString());
-//                i.putExtras(b);
+                System.out.println("GET PICKING: " + planActivityViewModel.getPickExercises());
+                Log.d("AddEditPlanActivity", "MSG: " + planActivityViewModel.getPickExercises());
+                b.putString("exercises",planActivityViewModel.getPickExercises());
+                intent.putExtras(b);
                 startActivityForResult(intent, ADD_EXERCISES_REQUEST);
             }
         });
@@ -87,6 +71,8 @@ public class AddEditPlanActivity extends AppCompatActivity {
             editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
             numberPickerPriority.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
+            planActivityViewModel.setPickExercises(intent.getStringExtra(EXTRA_EXERCISES));
+            textViewChoosenExercises.setText(planActivityViewModel.getPickExercises());
         } else {
             setTitle("Add note");
         }
@@ -95,17 +81,11 @@ public class AddEditPlanActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String namesOfExercises = "You haven't choosen anything yet";
         if (requestCode == ADD_EXERCISES_REQUEST && resultCode == RESULT_OK) {
-            String exercises = data.getStringExtra(AddExerciseToPlan.EXTRA_EXERCISES);
             String exercisesId = data.getStringExtra(AddExerciseToPlan.EXTRA_EXERCISES_ID);
-
-//            for (Exercise e : addExercisesToPlanViewModel.getChoosenExercises()) {
-//                namesOfExercises += namesOfExercises + e.getName();
-//            }
-
-            if(exercises!=""){
-                textViewChoosenExercises.setText(exercises +" "+ exercisesId);
+            if(exercisesId!=""){
+                textViewChoosenExercises.setText(exercisesId);
+                planActivityViewModel.setPickExercises(exercisesId);
             }
             Toast.makeText(this, "Exercises added", Toast.LENGTH_SHORT).show();
         } else {
@@ -128,6 +108,7 @@ public class AddEditPlanActivity extends AppCompatActivity {
         data.putExtra(EXTRA_TITLE, title);
         data.putExtra(EXTRA_DESCRIPTION, description);
         data.putExtra(EXTRA_PRIORITY, priority);
+        data.putExtra(EXTRA_EXERCISES, planActivityViewModel.getPickExercises());
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {

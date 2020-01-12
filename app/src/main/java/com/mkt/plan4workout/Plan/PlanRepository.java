@@ -9,11 +9,12 @@ import androidx.lifecycle.LiveData;
 import com.mkt.plan4workout.AppDatabase;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class PlanRepository {
     private PlanDao planDao;
     private LiveData<List<Plan>> allPlans;
-
+    private long resultId = 0;
 
     public PlanRepository(Application application){
         AppDatabase database = AppDatabase.getInstance(application);
@@ -21,8 +22,9 @@ public class PlanRepository {
         allPlans = planDao.getAllPlans();
     }
 
-    public void insert(Plan plan){
-        new InsertPlanAsyncTask(planDao).execute(plan);
+    public Long insert(Plan plan) throws ExecutionException, InterruptedException {
+        InsertPlanAsyncTask asyncTask = new InsertPlanAsyncTask(planDao);
+        return asyncTask.execute(plan).get();
     }
 
     public void update(Plan plan){
@@ -41,7 +43,7 @@ public class PlanRepository {
         return allPlans;
     }
 
-    private static class InsertPlanAsyncTask extends AsyncTask<Plan, Void, Void> {
+    private static class InsertPlanAsyncTask extends AsyncTask<Plan, Void, Long> {
         private PlanDao planDao;
 
         private InsertPlanAsyncTask(PlanDao planDao){
@@ -49,9 +51,15 @@ public class PlanRepository {
         }
 
         @Override
-        protected Void doInBackground(Plan... plans) {
-            planDao.insert(plans[0]);
-            return null;
+        protected Long doInBackground(Plan... plans) {
+            long id = planDao.insert(plans[0]);
+            System.out.println("ID OF INSERTED ROW = " + id);
+            return id;
+        }
+
+        @Override
+        protected void onPostExecute(Long search_id) {
+            //resultId = search_id;
         }
     }
 
