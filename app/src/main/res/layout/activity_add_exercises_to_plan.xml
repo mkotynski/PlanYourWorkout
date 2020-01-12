@@ -6,7 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".ExerciseActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/texting"
+        android:text="Cos tam"
+        />
     <Button
+        android:layout_below="@id/texting"
         android:id="@+id/button_save_choosen_exercises"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

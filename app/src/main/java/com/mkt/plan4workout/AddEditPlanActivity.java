@@ -2,6 +2,7 @@ package com.mkt.plan4workout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -19,6 +20,8 @@ import android.widget.Toast;
 import com.mkt.plan4workout.Exercise.Exercise;
 import com.mkt.plan4workout.Plan.Plan;
 
+import java.util.List;
+
 public class AddEditPlanActivity extends AppCompatActivity {
     public static final String EXTRA_TITLE = "com.mkt.plan4workout.EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION = "com.mkt.plan4workout.EXTRA_DESCRIPTION";
@@ -32,7 +35,7 @@ public class AddEditPlanActivity extends AppCompatActivity {
     private NumberPicker numberPickerPriority;
     private Button btnAddExercises;
     private TextView textViewChoosenExercises;
-    AddExercisesToPlanViewModel addExercisesToPlanViewModel;
+//    AddExercisesToPlanViewModel addExercisesToPlanViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +52,28 @@ public class AddEditPlanActivity extends AppCompatActivity {
         numberPickerPriority.setMaxValue(9);
 
 
-        addExercisesToPlanViewModel = ViewModelProviders.of(this).get(AddExercisesToPlanViewModel.class);
-
+//        addExercisesToPlanViewModel = ViewModelProviders.of(this).get(AddExercisesToPlanViewModel.class);
+//        addExercisesToPlanViewModel.addExercise(new Exercise("name","cateogry", "type", "description"));
+//        addExercisesToPlanViewModel.getCurrentExercises().setValue(addExercisesToPlanViewModel.getChoosenExercises());
+//        addExercisesToPlanViewModel.getCurrentExercises().observe(this, new Observer<List<Exercise>>() {
+//            String namesOfExercises = ""; //"You haven't choosen anything yet";
+//            @Override
+//            public void onChanged(List<Exercise> exercises) {
+//                for (Exercise e : exercises) {
+//                    namesOfExercises += namesOfExercises + e.getName();
+//                }
+//                System.out.println("GOT EXERCISES");
+//                textViewChoosenExercises.setText(namesOfExercises);
+//            }
+//        });
 
         btnAddExercises.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddEditPlanActivity.this, AddExerciseToPlan.class);
+                Bundle b = new Bundle();
+//                b.putString("name", etName.getText().toString());
+//                i.putExtras(b);
                 startActivityForResult(intent, ADD_EXERCISES_REQUEST);
             }
         });
@@ -79,10 +97,16 @@ public class AddEditPlanActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         String namesOfExercises = "You haven't choosen anything yet";
         if (requestCode == ADD_EXERCISES_REQUEST && resultCode == RESULT_OK) {
-            for (Exercise e : addExercisesToPlanViewModel.getChoosenExercises()) {
-                namesOfExercises += namesOfExercises + e.getName();
+            String exercises = data.getStringExtra(AddExerciseToPlan.EXTRA_EXERCISES);
+            String exercisesId = data.getStringExtra(AddExerciseToPlan.EXTRA_EXERCISES_ID);
+
+//            for (Exercise e : addExercisesToPlanViewModel.getChoosenExercises()) {
+//                namesOfExercises += namesOfExercises + e.getName();
+//            }
+
+            if(exercises!=""){
+                textViewChoosenExercises.setText(exercises +" "+ exercisesId);
             }
-            textViewChoosenExercises.setText(namesOfExercises);
             Toast.makeText(this, "Exercises added", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Plan not saved", Toast.LENGTH_SHORT).show();

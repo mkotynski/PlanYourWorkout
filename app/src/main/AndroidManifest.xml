@@ -12,6 +12,7 @@
         <activity android:name=".AddExerciseToPlan"></activity>
         <activity android:name=".ExerciseActivity" />
         <activity android:name=".AddEditPlanActivity" />
+        <activity android:name=".AddEditExerciseActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

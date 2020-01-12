@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mkt.plan4workout.R;
@@ -14,8 +15,9 @@ import com.mkt.plan4workout.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseHolder> {
+public class ExerciseAdapterPick extends RecyclerView.Adapter<ExerciseAdapterPick.ExerciseHolder> {
     private List<Exercise> exercises = new ArrayList<>();
+    private List<Integer> pick = new ArrayList<>();
     private OnItemClickListener listener;
     private Context context;
 
@@ -37,6 +39,16 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         holder.textViewDescription.setText(currentPlan.getDescription());
         holder.textViewPriority.setText(String.valueOf(currentPlan.getType()));
 
+        if(!pick.contains(currentPlan.getId())){
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorWhite));
+            TextView title = holder.itemView.findViewById(R.id.text_view_title);
+            title.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorBlack));
+        }
+        else{
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimary));
+            TextView title = holder.itemView.findViewById(R.id.text_view_title);
+            title.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorWhite));
+        }
         System.out.println(currentPlan.getId());
     }
 
@@ -45,8 +57,9 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         return exercises.size();
     }
 
-    public void setExercises(List<Exercise> exercises) {
+    public void setExercises(List<Exercise> exercises, List<Integer> pick) {
         this.exercises = exercises;
+        this.pick = pick;
         notifyDataSetChanged();
     }
 

@@ -79,7 +79,7 @@ public class ExerciseActivity extends AppCompatActivity {
         adapter.setOnItemClickListener(new ExerciseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Exercise exercise) {
-                Intent intent = new Intent(ExerciseActivity.this, AddEditPlanActivity.class);
+                Intent intent = new Intent(ExerciseActivity.this, AddEditExerciseActivity.class);
                 intent.putExtra(AddEditPlanActivity.EXTRA_ID, exercise.getId());
                 intent.putExtra(AddEditPlanActivity.EXTRA_TITLE, exercise.getName());
                 intent.putExtra(AddEditPlanActivity.EXTRA_DESCRIPTION, exercise.getDescription());

@@ -1,88 +1,120 @@
 package com.mkt.plan4workout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mkt.plan4workout.Exercise.Exercise;
 import com.mkt.plan4workout.Exercise.ExerciseAdapter;
+import com.mkt.plan4workout.Exercise.ExerciseAdapterPick;
+import com.mkt.plan4workout.Exercise.ExercisePick;
 import com.mkt.plan4workout.Exercise.ExerciseViewModel;
-import com.mkt.plan4workout.Plan.Plan;
-import com.mkt.plan4workout.Plan.PlanAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AddExerciseToPlan extends AppCompatActivity {
 
     public static final int ADD_PLAN_REQUEST = 1;
     public static final int EDIT_PLAN_REQUEST = 2;
+
+    public static final String EXTRA_EXERCISES = "com.mkt.plan4workout.EXTRA_EXERCISES";
+    public static final String EXTRA_EXERCISES_ID = "com.mkt.plan4workout.EXTRA_EXERCISES_ID";
+
     private Context context;
     ExerciseViewModel exerciseViewModel;
-    AddExercisesToPlanViewModel addExercisesToPlanViewModel;
+    ExercisePickViewModel exercisePickViewModel;
     Button btnAddExercisesToPlan;
+    TextView textView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exercises_to_plan);
 
-        btnAddExercisesToPlan=findViewById(R.id.button_save_choosen_exercises);
+        btnAddExercisesToPlan = findViewById(R.id.button_save_choosen_exercises);
+        textView = findViewById(R.id.texting);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
 
-        final ExerciseAdapter adapter = new ExerciseAdapter();
+        final ExerciseAdapterPick adapter = new ExerciseAdapterPick();
         recyclerView.setAdapter(adapter);
 
-        addExercisesToPlanViewModel = ViewModelProviders.of(this).get(AddExercisesToPlanViewModel.class);
+        //exercisePickViewModel = ViewModelProviders.of(this).get(AddExercisesToPlanViewModel.class);
+
         exerciseViewModel = ViewModelProviders.of(this).get(ExerciseViewModel.class);
+        exercisePickViewModel = ViewModelProviders.of(this).get(ExercisePickViewModel.class);
+
+        final List<Integer> pick = new ArrayList<>();
 
         exerciseViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
             public void onChanged(List<Exercise> exercises) {
-                adapter.setExercises(exercises);
+                adapter.setExercises(exercises,pick);
             }
         });
 
-        adapter.setOnItemClickListener(new ExerciseAdapter.OnItemClickListener() {
+        btnAddExercisesToPlan.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(Exercise exercise) { }
+            public void onClick(View v) {
+               saveExercises();
+            }
+        });
+
+//        addExercisesToPlanViewModel.getCurrentExercises().observe(this, new Observer<List<Exercise>>() {
+//            String namesOfExercises = ""; //"You haven't choosen anything yet";
+//            @Override
+//            public void onChanged(List<Exercise> exercises) {
+//                for (Exercise e : exercises) {
+//                    namesOfExercises += e.getName();
+//                }
+//                System.out.println("GOT EXERCISES");
+//                textView.setText(namesOfExercises);
+//            }
+//        });
+
+
+        adapter.setOnItemClickListener(new ExerciseAdapterPick.OnItemClickListener() {
+            @Override
+            public void onItemClick(Exercise exercise) {
+            }
 
             @Override
-            public void onItemViewClick(View itemView,Exercise exercise) {
-                if(addExercisesToPlanViewModel.isChoosen(exercise)){
-                    addExercisesToPlanViewModel.delExercise(exercise);
-                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorWhite));
-                    TextView title = itemView.findViewById(R.id.text_view_title);
-                    title.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorBlack));
+            public void onItemViewClick(View itemView, Exercise exercise) {
+                if (exercisePickViewModel.isChoosen(exercise)) {
+                    exercisePickViewModel.delExercise(exercise);
+                    pick.remove(Integer.valueOf(exercise.getId()));
+
                 } else {
-                    addExercisesToPlanViewModel.addExercise(exercise);
-                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorPrimary));
-                    TextView title = itemView.findViewById(R.id.text_view_title);
-                    title.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorWhite));
+                    exercisePickViewModel.addExercise(exercise);
+                    pick.add(Integer.valueOf(exercise.getId()));
                 }
             }
         });
+    }
+
+    private void saveExercises() {
+        Intent data = new Intent();
+//        data.putExtra(EXTRA_EXERCISES, ExercisePickViewModel.listToString());
+//        data.putExtra(EXTRA_EXERCISES_ID, ExercisePickViewModel.idListToString());
+        setResult(RESULT_OK, data);
+        finish();
     }
 
     @Override
