@@ -11,31 +11,32 @@ import com.mkt.plan4workout.Plan.Plan;
 import com.mkt.plan4workout.Plan.PlanDao;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class ExerciseRepository {
     private ExerciseDao exerciseDao;
     private LiveData<List<Exercise>> allExercises;
 
 
-    public ExerciseRepository(Application application){
+    public ExerciseRepository(Application application) {
         AppDatabase database = AppDatabase.getInstance(application);
         exerciseDao = database.exerciseDao();
         allExercises = exerciseDao.getAllExercises();
     }
 
-    public void insert(Exercise exercise){
+    public void insert(Exercise exercise) {
         new InsertExerciseAsyncTask(exerciseDao).execute(exercise);
     }
 
-    public void update(Exercise exercise){
+    public void update(Exercise exercise) {
         new UpdateExerciseAsyncTask(exerciseDao).execute(exercise);
     }
 
-    public void delete(Exercise exercise){
+    public void delete(Exercise exercise) {
         new DeleteExerciseAsyncTask(exerciseDao).execute(exercise);
     }
 
-    public void deleteAllExercises(){
+    public void deleteAllExercises() {
         new DeleteAllExercisesAsyncTask(exerciseDao).execute();
     }
 
@@ -43,10 +44,15 @@ public class ExerciseRepository {
         return allExercises;
     }
 
+    public List<Exercise> getPlanExercises(int id) throws ExecutionException, InterruptedException {
+        GetPlanExercisesAsyncTask asyncTask = new GetPlanExercisesAsyncTask(exerciseDao, id);
+        return asyncTask.execute().get();
+    }
+
     private static class InsertExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {
         private ExerciseDao exerciseDao;
 
-        private InsertExerciseAsyncTask(ExerciseDao exerciseDao){
+        private InsertExerciseAsyncTask(ExerciseDao exerciseDao) {
             this.exerciseDao = exerciseDao;
         }
 
@@ -60,7 +66,7 @@ public class ExerciseRepository {
     private static class UpdateExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {
         private ExerciseDao exerciseDao;
 
-        private UpdateExerciseAsyncTask(ExerciseDao exerciseDao){
+        private UpdateExerciseAsyncTask(ExerciseDao exerciseDao) {
             this.exerciseDao = exerciseDao;
         }
 
@@ -74,7 +80,7 @@ public class ExerciseRepository {
     private static class DeleteExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {
         private ExerciseDao exerciseDao;
 
-        private DeleteExerciseAsyncTask(ExerciseDao exerciseDao){
+        private DeleteExerciseAsyncTask(ExerciseDao exerciseDao) {
             this.exerciseDao = exerciseDao;
         }
 
@@ -88,7 +94,7 @@ public class ExerciseRepository {
     private static class DeleteAllExercisesAsyncTask extends AsyncTask<Void, Void, Void> {
         private ExerciseDao exerciseDao;
 
-        private DeleteAllExercisesAsyncTask(ExerciseDao exerciseDao){
+        private DeleteAllExercisesAsyncTask(ExerciseDao exerciseDao) {
             this.exerciseDao = exerciseDao;
         }
 
@@ -96,6 +102,21 @@ public class ExerciseRepository {
         protected Void doInBackground(Void... voids) {
             exerciseDao.deleteAllExercises();
             return null;
+        }
+    }
+
+    private static class GetPlanExercisesAsyncTask extends AsyncTask<Void, Void, List<Exercise>> {
+        private ExerciseDao exerciseDao;
+        private int id;
+
+        private GetPlanExercisesAsyncTask(ExerciseDao exerciseDao, int id) {
+            this.exerciseDao = exerciseDao;
+            this.id = id;
+        }
+
+        @Override
+        protected List<Exercise> doInBackground(Void... voids) {
+            return exerciseDao.getPlanExercises(id);
         }
     }
 }

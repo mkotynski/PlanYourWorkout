@@ -8,23 +8,36 @@
     tools:context=".MainActivity">
 
     <RelativeLayout
+        android:id="@+id/linear_layout_tags"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <Button
             android:id="@+id/button_exercise"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:text="Exercises" />
         <Button
             android:id="@+id/button_calendar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/button_exercise"
+            android:layout_marginTop="10dp"
             android:text="Calendar" />
+        <Button
+            android:id="@+id/button_do_workout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@+id/button_calendar"
+            android:text="Do Today's Workout"
+            android:layout_marginTop="10dp"
+            android:visibility="invisible"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/button_calendar"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/button_do_workout"
             android:id="@+id/recycler_view"
             tools:listitem="@layout/plan_item" />
     </RelativeLayout>

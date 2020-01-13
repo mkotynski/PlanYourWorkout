@@ -10,6 +10,7 @@ import com.mkt.plan4workout.Plan.Plan;
 import com.mkt.plan4workout.Plan.PlanRepository;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class ExerciseViewModel extends AndroidViewModel {
     private ExerciseRepository repository;
@@ -35,6 +36,10 @@ public class ExerciseViewModel extends AndroidViewModel {
 
     public void deleteAllExercises() {
         repository.deleteAllExercises();
+    }
+
+    public List<Exercise> getPlanExercises(int id) throws ExecutionException, InterruptedException {
+        return repository.getPlanExercises(id);
     }
 
     public LiveData<List<Exercise>> getAllExercises() {

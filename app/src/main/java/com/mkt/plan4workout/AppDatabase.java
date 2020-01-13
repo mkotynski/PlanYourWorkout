@@ -9,6 +9,8 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.mkt.plan4workout.DoWorkout.DoWorkout;
+import com.mkt.plan4workout.DoWorkout.DoWorkoutDao;
 import com.mkt.plan4workout.Exercise.Exercise;
 import com.mkt.plan4workout.Exercise.ExerciseDao;
 import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlan;
@@ -18,7 +20,7 @@ import com.mkt.plan4workout.Plan.PlanDao;
 import com.mkt.plan4workout.Workout.Workout;
 import com.mkt.plan4workout.Workout.WorkoutDao;
 
-@Database(entities = {Plan.class, Exercise.class, ExerciseToPlan.class, Workout.class}, version = 3, exportSchema = false)
+@Database(entities = {Plan.class, Exercise.class, ExerciseToPlan.class, Workout.class, DoWorkout.class}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;
@@ -27,6 +29,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ExerciseDao exerciseDao();
     public abstract ExerciseToPlanDao e2pDao();
     public abstract WorkoutDao workoutDao();
+    public abstract DoWorkoutDao doWorkoutDao();
 
     public static synchronized AppDatabase getInstance(Context context) {
         if (instance == null){
@@ -51,6 +54,7 @@ public abstract class AppDatabase extends RoomDatabase {
         private ExerciseDao exerciseDao;
         private ExerciseToPlanDao e2pDao;
         private WorkoutDao workoutDao;
+        private DoWorkoutDao doWorkoutDao;
 
         private PopulateDbAsyncTask(AppDatabase db){
 
@@ -58,6 +62,7 @@ public abstract class AppDatabase extends RoomDatabase {
             exerciseDao = db.exerciseDao();
             e2pDao = db.e2pDao();
             workoutDao = db.workoutDao();
+            doWorkoutDao = db.doWorkoutDao();
         }
 
         @Override

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.mkt.plan4workout.DoWorkout.DoWorkout;
 import com.mkt.plan4workout.R;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseHolder> {
     private List<Exercise> exercises = new ArrayList<>();
+    private List<DoWorkout> doWorkouts = new ArrayList<>();
     private OnItemClickListener listener;
     private Context context;
 
@@ -50,6 +52,11 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         notifyDataSetChanged();
     }
 
+    public void setDoWorkouts(List<DoWorkout> doWorkouts) {
+        this.doWorkouts = doWorkouts;
+        notifyDataSetChanged();
+    }
+
     public Exercise getExerciseAt(int position) {
         return exercises.get(position);
     }
@@ -72,6 +79,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     if (listener != null && position != RecyclerView.NO_POSITION) {
                         listener.onItemClick(exercises.get(position));
                         listener.onItemViewClick(itemView, exercises.get(position));
+                        listener.onDoWorkoutClick(itemView, exercises.get(position), doWorkouts.get(position));
                     }
                 }
             });
@@ -82,6 +90,8 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         void onItemClick(Exercise exercise);
 
         void onItemViewClick(View itemView, Exercise exercise);
+
+        void onDoWorkoutClick(View itemView, Exercise exercise, DoWorkout doWorkout);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {

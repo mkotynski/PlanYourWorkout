@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.mkt.plan4workout.DoWorkout.DoWorkout;
 import com.mkt.plan4workout.Exercise.Exercise;
 import com.mkt.plan4workout.Exercise.ExerciseAdapter;
 import com.mkt.plan4workout.Exercise.ExerciseViewModel;
@@ -88,8 +89,11 @@ public class ExerciseActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemViewClick(View itemView,Exercise exercise) {
+            public void onItemViewClick(View itemView, Exercise exercise) {
+            }
 
+            @Override
+            public void onDoWorkoutClick(View itemView, Exercise exercise, DoWorkout doWorkout) {
             }
         });
     }
@@ -107,7 +111,7 @@ public class ExerciseActivity extends AppCompatActivity {
             exerciseViewModel.insert(exercise);
 
             Toast.makeText(this, "Exercise saved", Toast.LENGTH_SHORT).show();
-        } else  if (requestCode == EDIT_PLAN_REQUEST && resultCode == RESULT_OK) {
+        } else if (requestCode == EDIT_PLAN_REQUEST && resultCode == RESULT_OK) {
             int id = data.getIntExtra(AddEditPlanActivity.EXTRA_ID, -1);
 
             if (id == -1) {

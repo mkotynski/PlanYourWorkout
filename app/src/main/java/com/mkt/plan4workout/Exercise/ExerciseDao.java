@@ -26,4 +26,7 @@ public interface ExerciseDao {
 
     @Query("DELETE FROM exercise_table")
     void deleteAllExercises();
+
+    @Query("SELECT * FROM exercise_table WHERE id in (SELECT exerciseId FROM exercise_2_plan WHERE planId = :idOfPlan)")
+    List<Exercise> getPlanExercises(int idOfPlan);
 }

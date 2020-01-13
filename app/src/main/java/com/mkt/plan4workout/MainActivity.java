@@ -17,7 +17,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.annimon.stream.Stream;
@@ -33,6 +35,7 @@ import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlanViewModel;
 import com.mkt.plan4workout.Plan.Plan;
 import com.mkt.plan4workout.Plan.PlanAdapter;
 import com.mkt.plan4workout.Plan.PlanViewModel;
+import com.mkt.plan4workout.Workout.Workout;
 import com.mkt.plan4workout.Workout.WorkoutViewModel;
 
 import java.util.ArrayList;
@@ -40,6 +43,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import kotlinx.coroutines.scheduling.WorkQueueKt;
 
 public class MainActivity extends AppCompatActivity implements OnSelectDateListener {
     public static final int ADD_PLAN_REQUEST = 1;
@@ -49,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
     private MainActivityViewModel mainViewModel;
     private WorkoutViewModel workoutViewModel;
     Calendar calendar;
+    Button buttonDoWorkout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,9 +153,26 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
             date = date.replace(",", "");
             date = date.substring(1,date.lastIndexOf("]"));
             System.out.println(date);
-            if(workoutViewModel.getWorkoutByDate(date) != null){
+            final String fDate = date;
+            Workout workout = workoutViewModel.getWorkoutByDate(date);
+            if(workout != null){
                 Toast.makeText(this, "DZIEN TRENINGOWY", Toast.LENGTH_SHORT).show();
-                System.out.println("DZIEN TRENINGOWY");
+                buttonDoWorkout = findViewById(R.id.button_do_workout);
+                buttonDoWorkout.setVisibility(View.VISIBLE);
+                ViewGroup.LayoutParams params = buttonDoWorkout.getLayoutParams();
+                params.height = 170;
+                buttonDoWorkout.setLayoutParams(params);
+
+                buttonDoWorkout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MainActivity.this, DoWorkoutActivity.class);
+                        intent.putExtra("idOfPlan", Integer.valueOf(workout.getIdOfPlan()));
+                        intent.putExtra("idOfWorkout", Integer.valueOf(workout.getId()));
+                        startActivity(intent);
+                        //startActivityForResult(intent, ADD_PLAN_REQUEST);
+                    }
+                });
             }
         } catch (ExecutionException e) {
             e.printStackTrace();

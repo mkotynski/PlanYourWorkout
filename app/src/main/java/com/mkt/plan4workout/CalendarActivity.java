@@ -6,7 +6,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -15,19 +14,21 @@ import com.applandeo.materialcalendarview.CalendarView;
 import android.widget.Toast;
 
 import com.applandeo.materialcalendarview.EventDay;
-import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 import com.applandeo.materialcalendarview.utils.DateUtils;
+
+import com.mkt.plan4workout.DoWorkout.DoWorkout;
+import com.mkt.plan4workout.DoWorkout.DoWorkoutViewModel;
 import com.mkt.plan4workout.Exercise.Exercise;
+import com.mkt.plan4workout.Exercise.ExerciseViewModel;
 import com.mkt.plan4workout.Plan.Plan;
 import com.mkt.plan4workout.Plan.PlanViewModel;
 import com.mkt.plan4workout.Workout.Workout;
 import com.mkt.plan4workout.Workout.WorkoutViewModel;
-import com.mkt.plan4workout.utils.DrawableUtils;
+
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 
@@ -36,7 +37,8 @@ public class CalendarActivity extends AppCompatActivity {
     WorkoutViewModel workoutViewModel;
     CalendarViewModel calendarViewModel;
     PlanViewModel planViewModel;
-
+    DoWorkoutViewModel doWoViewModel;
+    ExerciseViewModel exerciseViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +46,8 @@ public class CalendarActivity extends AppCompatActivity {
         workoutViewModel = ViewModelProviders.of(this).get(WorkoutViewModel.class);
         calendarViewModel = ViewModelProviders.of(this).get(CalendarViewModel.class);
         planViewModel = ViewModelProviders.of(this).get(PlanViewModel.class);
+        doWoViewModel = ViewModelProviders.of(this).get(DoWorkoutViewModel.class);
+        exerciseViewModel = ViewModelProviders.of(this).get(ExerciseViewModel.class);
 
         List<EventDay> events = new ArrayList<>();
 
@@ -53,10 +57,10 @@ public class CalendarActivity extends AppCompatActivity {
         CalendarView calendarView = findViewById(R.id.calendarView);
 
         Calendar min = Calendar.getInstance();
-        min.add(Calendar.MONTH, -5);
+        min.add(Calendar.MONTH, -1);
 
         Calendar max = Calendar.getInstance();
-        max.add(Calendar.MONTH, 5);
+        max.add(Calendar.MONTH, 1);
 
         calendarView.setMinimumDate(min);
         calendarView.setMaximumDate(max);
@@ -117,6 +121,7 @@ public class CalendarActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), "Added event", Toast.LENGTH_LONG).show();
             }
             else {
+                //events.remove(eventDay);
                 try {
                     workoutViewModel.delete(workoutViewModel.getWorkoutByDate(selectedDate.getTime().toString()));
                     finish();
@@ -161,6 +166,12 @@ public class CalendarActivity extends AppCompatActivity {
             if (idOfPlan != -1 && date != "") {
                 try {
                     id = workoutViewModel.insert(new Workout(idOfPlan, date, 0));
+                    System.out.println("CWICZENIA DLA PLANU O TAKIN ID'KU: " + (int)id);
+                    List<Exercise> exerciseList = exerciseViewModel.getPlanExercises(idOfPlan);
+                    System.out.println("TYLE REKORDOW POWINNO DODAC JOL: " + exerciseList.size());
+                    for(Exercise exercise : exerciseList){
+                        doWoViewModel.insert(new DoWorkout((int)id,exercise.getId()));
+                    }
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
