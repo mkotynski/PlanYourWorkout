@@ -15,7 +15,7 @@
         <activity android:name=".ExerciseActivity" />
         <activity android:name=".AddEditPlanActivity" />
         <activity android:name=".AddEditExerciseActivity" />
-        <activity android:name=".DoEditExercise" />
+        <activity android:name=".DoEditWorkoutExercise" />
         <activity android:name=".MainActivityX" />
         <activity
             android:name=".CalendarActivity"

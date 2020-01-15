@@ -170,7 +170,7 @@ public class CalendarActivity extends AppCompatActivity {
                     List<Exercise> exerciseList = exerciseViewModel.getPlanExercises(idOfPlan);
                     System.out.println("TYLE REKORDOW POWINNO DODAC JOL: " + exerciseList.size());
                     for(Exercise exercise : exerciseList){
-                        doWoViewModel.insert(new DoWorkout((int)id,exercise.getId()));
+                        doWoViewModel.insert(new DoWorkout((int)id,exercise.getId(),0));
                     }
                 } catch (ExecutionException e) {
                     e.printStackTrace();

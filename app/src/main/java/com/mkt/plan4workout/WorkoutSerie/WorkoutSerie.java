@@ -1,10 +1,11 @@
-package com.mkt.plan4workout.DoWorkout;
+package com.mkt.plan4workout.WorkoutSerie;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "do_workout_table")
-public class DoWorkout {
+@Entity(tableName = "workout_serie")
+public class WorkoutSerie {
+
     @PrimaryKey(autoGenerate = true)
     private int id;
 
@@ -12,12 +13,15 @@ public class DoWorkout {
 
     private int exerciseId;
 
-    private int series;
+    private int reps;
 
-    public DoWorkout(int workoutId, int exerciseId, int series) {
+    private int kg;
+
+    public WorkoutSerie(int workoutId, int exerciseId, int reps, int kg) {
         this.workoutId = workoutId;
         this.exerciseId = exerciseId;
-        this.series = series;
+        this.reps = reps;
+        this.kg = kg;
     }
 
     public void setId(int id) {
@@ -36,8 +40,11 @@ public class DoWorkout {
         return exerciseId;
     }
 
-    public int getSeries() {
-        return series;
+    public int getReps() {
+        return reps;
     }
 
+    public int getKg() {
+        return kg;
+    }
 }

@@ -19,8 +19,10 @@ import com.mkt.plan4workout.Plan.Plan;
 import com.mkt.plan4workout.Plan.PlanDao;
 import com.mkt.plan4workout.Workout.Workout;
 import com.mkt.plan4workout.Workout.WorkoutDao;
+import com.mkt.plan4workout.WorkoutSerie.WorkoutSerie;
+import com.mkt.plan4workout.WorkoutSerie.WorkoutSerieDao;
 
-@Database(entities = {Plan.class, Exercise.class, ExerciseToPlan.class, Workout.class, DoWorkout.class}, version = 4, exportSchema = false)
+@Database(entities = {Plan.class, Exercise.class, ExerciseToPlan.class, Workout.class, DoWorkout.class, WorkoutSerie.class}, version = 6, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;
@@ -30,6 +32,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ExerciseToPlanDao e2pDao();
     public abstract WorkoutDao workoutDao();
     public abstract DoWorkoutDao doWorkoutDao();
+    public abstract WorkoutSerieDao workoutSerieDao();
 
     public static synchronized AppDatabase getInstance(Context context) {
         if (instance == null){
@@ -55,6 +58,7 @@ public abstract class AppDatabase extends RoomDatabase {
         private ExerciseToPlanDao e2pDao;
         private WorkoutDao workoutDao;
         private DoWorkoutDao doWorkoutDao;
+        private WorkoutSerieDao workoutSerieDao;
 
         private PopulateDbAsyncTask(AppDatabase db){
 
@@ -63,6 +67,7 @@ public abstract class AppDatabase extends RoomDatabase {
             e2pDao = db.e2pDao();
             workoutDao = db.workoutDao();
             doWorkoutDao = db.doWorkoutDao();
+            workoutSerieDao = db.workoutSerieDao();
         }
 
         @Override

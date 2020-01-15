@@ -8,31 +8,57 @@
     android:padding="16dp"
     tools:context=".AddEditPlanActivity">
 
-    <EditText
-        android:id="@+id/edit_text_title"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Title"
-        android:inputType="text"
+        android:text="#Exercise name"
+        android:textSize="20dp"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/rounded_border"
+        android:padding="7dp"
         />
-    <EditText
-        android:id="@+id/edit_text_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Description"
-        android:inputType="textMultiLine"
-        />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Priority:"
-        android:layout_marginTop="8dp"
+        android:text="Series:"
+        android:layout_marginTop="10dp"
         android:textAppearance="@android:style/TextAppearance.Medium"
         />
-    <NumberPicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+
+        <NumberPicker
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/number_picker_priority"
         />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/series_details"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/series_rep_kg"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/edit_text_title"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:hint="Reps"
+                android:inputType="text"
+                />
+            <EditText
+                android:id="@+id/edit_text_description"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:hint="Kilograms"
+                android:layout_below="@id/edit_text_title"
+                android:inputType="textMultiLine"
+                />
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>
