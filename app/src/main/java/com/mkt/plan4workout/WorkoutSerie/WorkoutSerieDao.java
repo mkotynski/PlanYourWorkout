@@ -26,6 +26,6 @@ public interface WorkoutSerieDao {
     @Query("SELECT * FROM workout_serie ORDER BY id DESC")
     LiveData<List<WorkoutSerie>> getAllWorkoutSeries();
 
-    @Query("SELECT * FROM workout_serie WHERE id = :id")
-    WorkoutSerie getWorkout(int id);
+    @Query("SELECT * FROM workout_serie WHERE workoutId = :id")
+    List<WorkoutSerie> getWorkoutSeries(int id);
 }

@@ -39,7 +39,7 @@ public class WorkoutSerieRepository {
         new DeleteAllWorkoutsAsyncTask(workoutSerieDao).execute();
     }
 
-    public WorkoutSerie getWorkout(int id) throws ExecutionException, InterruptedException {
+    public List<WorkoutSerie> getWorkoutSeries(int id) throws ExecutionException, InterruptedException {
         GetWorkoutAsyncTask asyncTask = new GetWorkoutAsyncTask(workoutSerieDao, id);
         return asyncTask.execute().get();
     }
@@ -110,7 +110,7 @@ public class WorkoutSerieRepository {
         }
     }
 
-    private static class GetWorkoutAsyncTask extends AsyncTask<Void, Void, WorkoutSerie> {
+    private static class GetWorkoutAsyncTask extends AsyncTask<Void, Void, List<WorkoutSerie>> {
         private WorkoutSerieDao workoutDao;
         private int id;
 
@@ -120,8 +120,8 @@ public class WorkoutSerieRepository {
         }
 
         @Override
-        protected WorkoutSerie doInBackground(Void... voids) {
-            return workoutDao.getWorkout(id);
+        protected List<WorkoutSerie> doInBackground(Void... voids) {
+            return workoutDao.getWorkoutSeries(id);
         }
     }
 

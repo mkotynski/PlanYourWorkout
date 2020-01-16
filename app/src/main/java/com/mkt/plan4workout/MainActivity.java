@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
             System.out.println(date);
             final String fDate = date;
             Workout workout = workoutViewModel.getWorkoutByDate(date);
-            if(workout != null){
+            if(workout != null && workout.getDone() == 0){
                 Toast.makeText(this, "DZIEN TRENINGOWY", Toast.LENGTH_SHORT).show();
                 buttonDoWorkout = findViewById(R.id.button_do_workout);
                 buttonDoWorkout.setVisibility(View.VISIBLE);
@@ -169,8 +169,8 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
                         Intent intent = new Intent(MainActivity.this, DoWorkoutActivity.class);
                         intent.putExtra("idOfPlan", Integer.valueOf(workout.getIdOfPlan()));
                         intent.putExtra("idOfWorkout", Integer.valueOf(workout.getId()));
-                        startActivity(intent);
-                        //startActivityForResult(intent, ADD_PLAN_REQUEST);
+                        //startActivity(intent);
+                        startActivityForResult(intent, 3);
                     }
                 });
             }
@@ -239,8 +239,29 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
             }
 
             Toast.makeText(this, "Plan updated", Toast.LENGTH_SHORT).show();
+        } else  if (requestCode == 3 && resultCode == RESULT_OK) {
+            int id = data.getIntExtra("idOfWorkout", -1);
+            int idOfPlan = data.getIntExtra("idOfPlan", -1);
+
+            if (id == -1) {
+                Toast.makeText(this, "Workout can't be updated", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String timer[] = calendar.getTime().toString().split(" ");
+            timer[3] = "00:00:00";
+            String date = Arrays.toString(timer);
+            date = date.replace(",", "");
+            date = date.substring(1,date.lastIndexOf("]"));
+            System.out.println(date);
+            final String fDate = date;
+
+            Workout workout= new Workout(idOfPlan,fDate, 1);
+            workout.setId(id);
+            workoutViewModel.update(workout);
+
+            Toast.makeText(this, "Workout done", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Plan not saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Problem with saving", Toast.LENGTH_SHORT).show();
         }
     }
 

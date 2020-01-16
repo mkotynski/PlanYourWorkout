@@ -42,8 +42,8 @@ public class WorkSerieViewModel extends AndroidViewModel {
         return allWorkoutSeries;
     }
 
-    public WorkoutSerie getWorkout(int id) throws ExecutionException, InterruptedException {
-        return repository.getWorkout(id);
+    public List<WorkoutSerie> getWorkoutSeries(int id) throws ExecutionException, InterruptedException {
+        return repository.getWorkoutSeries(id);
     }
 
 }

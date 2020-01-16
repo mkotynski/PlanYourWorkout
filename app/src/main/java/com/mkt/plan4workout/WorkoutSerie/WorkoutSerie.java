@@ -4,7 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "workout_serie")
-public class WorkoutSerie {
+public class WorkoutSerie implements Cloneable{
 
     @PrimaryKey(autoGenerate = true)
     private int id;

@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.mkt.plan4workout.utils.RepsAndKgEditText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DoEditWorkoutExercise extends AppCompatActivity {
@@ -41,7 +42,9 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
     private List<RepsAndKgEditText> series = new ArrayList<>();
     private List<LinearLayout> serie = new ArrayList<>();
 
+    private boolean isEditingData = false;
     DoViewModel doViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,62 +58,95 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
         //etNumberSeries = findViewById(R.id.edit_number_series);
         numberPickerPriority = findViewById(R.id.number_picker_priority);
 
-        doViewModel.setExerciseId(getIntent().getExtras().getString("exercise_id"));
-        doViewModel.setWorkoutId(getIntent().getExtras().getString("do_workout_id"));
+        doViewModel.setExerciseId(getIntent().getExtras().getInt("exercise_id"));
+        doViewModel.setWorkoutId(getIntent().getExtras().getInt("do_workout_id"));
         doViewModel.setExerciseName(getIntent().getExtras().getString("exercise_name"));
 
-        System.out.println(doViewModel.getExerciseId());
-        System.out.println(doViewModel.getExerciseName());
-        System.out.println(doViewModel.getWorkoutId());
-
+        if (getIntent().getStringArrayExtra("kgs") != null) {
+            List<String> kgsList = Arrays.asList(getIntent().getStringArrayExtra("kgs"));
+            doViewModel.setKgs(kgsList);
+        }
+        if (getIntent().getStringArrayExtra("reps") != null) {
+            List<String> repsList = Arrays.asList(getIntent().getStringArrayExtra("reps"));
+            doViewModel.setReps(repsList);
+        }
+        if (getIntent().getStringArrayExtra("ids") != null) {
+            List<String> idsList = Arrays.asList(getIntent().getStringArrayExtra("ids"));
+            doViewModel.setIds(idsList);
+        }
         numberPickerPriority.setMinValue(1);
         numberPickerPriority.setMaxValue(9);
         numberPickerPriority.setValue(4);
 
 
-        LinearLayout.LayoutParams params = new  LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        LinearLayout.LayoutParams paramsInner = new  LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams paramsInner = new LinearLayout.LayoutParams(
                 400,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
         mRlayout.setLayoutParams(params);
 
+        if (doViewModel.getKgs() == null) {
+            numberPickerPriority.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+                @Override
+                public void onValueChange(NumberPicker numberPicker, int i, int i2) {
+                    countOfSeries = i2;
+                    System.out.println("i:" + i + "; i2:" + i2);
+                    series.removeAll(series);
+                    serie.removeAll(serie);
+                    mRlayout.removeAllViews();
+                    for (int j = 1; j <= i2; j++) {
+                        serie.add(new LinearLayout(DoEditWorkoutExercise.this));
+                        series.add(new RepsAndKgEditText(new EditText(DoEditWorkoutExercise.this), new EditText(DoEditWorkoutExercise.this), DoEditWorkoutExercise.this));
+                        series.get(j - 1).getReps().setHint("Reps");
+                        series.get(j - 1).getReps().setId(j + 20);
+                        series.get(j - 1).getKg().setHint("Kilograms");
+                        series.get(j - 1).getKg().setId(j + 120);
 
-        numberPickerPriority.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-            @Override
-            public void onValueChange(NumberPicker numberPicker, int i, int i2) {
-                countOfSeries = i2;
-                System.out.println("i:" + i + "; i2:" +i2);
-                series.removeAll(series);
-                serie.removeAll(serie);
-                mRlayout.removeAllViews();
-                for(int j = 1; j <= i2; j++){
-                    serie.add(new LinearLayout(DoEditWorkoutExercise.this));
-                    series.add(new RepsAndKgEditText(new EditText(DoEditWorkoutExercise.this), new EditText(DoEditWorkoutExercise.this), DoEditWorkoutExercise.this));
-                    series.get(j-1).getReps().setHint("Reps");
-                    series.get(j-1).getReps().setId(j+20);
-                    series.get(j-1).getKg().setHint("Kilograms");
-                    series.get(j-1).getKg().setId(j+120);
+                        series.get(j - 1).getReps().setLayoutParams(paramsInner);
+                        series.get(j - 1).getKg().setLayoutParams(paramsInner);
 
-                    series.get(j-1).getReps().setLayoutParams(paramsInner);
-                    series.get(j-1).getKg().setLayoutParams(paramsInner);
+                        serie.get(j - 1).addView(series.get(j - 1).getReps());
+                        serie.get(j - 1).addView(series.get(j - 1).getKg());
+                        serie.get(j - 1).setLayoutParams(params);
 
-                    serie.get(j-1).addView(series.get(j-1).getReps());
-                    serie.get(j-1).addView(series.get(j-1).getKg());
-                    serie.get(j-1).setLayoutParams(params);
+                        mRlayout.addView(serie.get(j - 1));
+                    }
 
-                    mRlayout.addView(serie.get(j-1));
                 }
+            });
+        } else {
+            isEditingData = true;
+            numberPickerPriority.setVisibility(View.GONE);
+            series.removeAll(series);
+            serie.removeAll(serie);
+            mRlayout.removeAllViews();
+            for (int j = 1; j <= doViewModel.getKgs().size(); j++) {
+                serie.add(new LinearLayout(DoEditWorkoutExercise.this));
+                series.add(new RepsAndKgEditText(new EditText(DoEditWorkoutExercise.this), new EditText(DoEditWorkoutExercise.this), DoEditWorkoutExercise.this));
+                series.get(j - 1).getReps().setText(doViewModel.getReps().get(j - 1));
+                series.get(j - 1).getReps().setId(j + 20);
+                series.get(j - 1).getKg().setText(doViewModel.getKgs().get(j - 1));
+                series.get(j - 1).getKg().setId(j + 120);
 
+                series.get(j - 1).getReps().setLayoutParams(paramsInner);
+                series.get(j - 1).getKg().setLayoutParams(paramsInner);
+
+                serie.get(j - 1).addView(series.get(j - 1).getReps());
+                serie.get(j - 1).addView(series.get(j - 1).getKg());
+                serie.get(j - 1).setLayoutParams(params);
+
+                mRlayout.addView(serie.get(j - 1));
             }
-        });
+        }
 
+        getSupportActionBar().
 
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
+                setHomeAsUpIndicator(R.drawable.ic_close);
 
         Intent intent = getIntent();
         if (intent.hasExtra("do_workout_id")) {
@@ -121,6 +157,7 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
         } else {
             setTitle("Set workout exercise");
         }
+
     }
 
     private void saveExercise() {
@@ -138,20 +175,22 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
         data.putExtra(EXTRA_DESCRIPTION, description);
         data.putExtra(EXTRA_PRIORITY, priority);
 
+        if (isEditingData) countOfSeries = doViewModel.getKgs().size();
         String[] reps = new String[countOfSeries];
         String[] kg = new String[countOfSeries];
-        for(int p = 0; p<countOfSeries;p++){
+        for (int p = 0; p < countOfSeries; p++) {
             System.out.println(series.get(p).getReps().getText().toString());
             System.out.println(series.get(p).getKg().getText().toString());
             reps[p] = series.get(p).getReps().getText().toString();
             kg[p] = series.get(p).getKg().getText().toString();
         }
 
+        if(doViewModel.getIds() != null) data.putExtra("ids", doViewModel.getIds().toArray(new String[0]));
         data.putExtra("reps", reps);
         data.putExtra("kg", kg);
         data.putExtra("series", countOfSeries);
-        data.putExtra("id_do_workout", doViewModel.getWorkoutId());
-        data.putExtra("id_exercise", doViewModel.getExerciseId());
+        data.putExtra("do_workout_id", doViewModel.getWorkoutId());
+        data.putExtra("exercise_id", doViewModel.getExerciseId());
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {

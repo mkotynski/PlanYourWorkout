@@ -9,6 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,6 +38,8 @@ public class DoWorkoutActivity extends AppCompatActivity {
     ExerciseViewModel exerciseViewModel;
     WorkSerieViewModel seriesViewModel;
 
+    int idOfWorkout;
+    int idOfPlan;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +61,8 @@ public class DoWorkoutActivity extends AppCompatActivity {
         final ExerciseAdapter adapter = new ExerciseAdapter();
         recyclerView.setAdapter(adapter);
 
-        int idOfWorkout = intent.getIntExtra("idOfWorkout", -1);
-        int idOfPlan = intent.getIntExtra("idOfPlan", -1);
+        idOfWorkout = intent.getIntExtra("idOfWorkout", -1);
+        idOfPlan = intent.getIntExtra("idOfPlan", -1);
 
         doWoViewModel.getAllWorkouts().observe(this, new Observer<List<DoWorkout>>() {
             @Override
@@ -73,8 +79,53 @@ public class DoWorkoutActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                        System.out.println("SIZE: " + exerciseList.size());
                         adapter.setExercises(exerciseList);
+
+
+                        seriesViewModel.getAllWorkouts().observe(DoWorkoutActivity.this, new Observer<List<WorkoutSerie>>() {
+                            List<List<WorkoutSerie>> listWSeries = new ArrayList<>();
+
+                            @Override
+                            public void onChanged(List<WorkoutSerie> workoutSeries) {
+                                listWSeries.removeAll(listWSeries);
+                                for (DoWorkout doWorkout : doWorkouts) {
+                                    List<WorkoutSerie> wSeries = new ArrayList<>();
+                                    for (WorkoutSerie workoutSerie : workoutSeries) {
+                                        System.out.println(workoutSerie.getWorkoutId() +"=="+ doWorkout.getId() +"&&"+ doWorkout.getExerciseId() +"=="+ workoutSerie.getExerciseId());
+                                        if (workoutSerie.getWorkoutId() == doWorkout.getId() && doWorkout.getExerciseId() == workoutSerie.getExerciseId()) {
+                                            if (!wSeries.contains(workoutSerie))
+                                                wSeries.add(workoutSerie);
+                                        }
+                                    }
+
+//                                    int pom = 0;
+//                                    int cnt = 0;
+//                                    for(List<WorkoutSerie> w1 : listWSeries) {
+//                                        for (WorkoutSerie ws : w1) {
+//                                            if(ws.getId() == wSeries.get(pom).getId()){
+//                                                cnt++;
+//                                            }
+//                                                pom++;
+//                                        }
+//                                        pom=0;
+//                                    }
+//                                    if(cnt == 0)
+                                    listWSeries.add(wSeries);
+                                }
+
+                                System.out.println("ListWseries: " + listWSeries.size());
+                                adapter.setSeriesWorkout(listWSeries);
+
+
+                                System.out.println("ListWseries: " + listWSeries.size());
+                                for (List<WorkoutSerie> ws: listWSeries){
+                                    System.out.println("Wseries: " + ws.size());
+                                    for(WorkoutSerie w : ws){
+                                        System.out.println(w.getWorkoutId() + " - " + w.getExerciseId() + " - " + w.getKg());
+                                    }
+                                }
+                            }
+                        });
                     }
                 });
                 adapter.setDoWorkouts(doWorkouts);
@@ -92,11 +143,51 @@ public class DoWorkoutActivity extends AppCompatActivity {
 
             @Override
             public void onDoWorkoutClick(View itemView, Exercise exercise, DoWorkout doWorkout) {
+                doViewModel.setEditing(false);
+                List<String> idsEx = new ArrayList<>();
+                List<String> repEx = new ArrayList<>();
+                List<String> kgEx = new ArrayList<>();
+                List<WorkoutSerie> workoutSeries = null;
+                int edit = 0;
+                try {
+                    workoutSeries = seriesViewModel.getWorkoutSeries(doWorkout.getId());
+                    for (WorkoutSerie workoutSerie : workoutSeries) {
+                        System.out.println("Tutaj: " + workoutSerie.getExerciseId() + " == " + doWorkout.getExerciseId());
+                        System.out.println("tutaj do work id: " + workoutSerie.getWorkoutId() + " == " + doWorkout.getWorkoutId());
+                        if (doWorkout.getId() == workoutSerie.getWorkoutId() && doWorkout.getExerciseId() == workoutSerie.getExerciseId()) {
+//                                Toast.makeText(DoWorkoutActivity.this, "EDITing", Toast.LENGTH_SHORT).show();
+                            idsEx.add(String.valueOf(workoutSerie.getId()));
+                            repEx.add(String.valueOf(workoutSerie.getReps()));
+                            kgEx.add(String.valueOf(workoutSerie.getKg()));
+                            edit++;
+                        }
+                    }
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("EDIT: " + edit);
+                if (edit > 0) {
+                    doViewModel.setIds(idsEx);
+                    doViewModel.setReps(repEx);
+                    doViewModel.setKgs(kgEx);
+                    doViewModel.setEditing(true);
+                }
+
                 Intent intent = new Intent(DoWorkoutActivity.this, DoEditWorkoutExercise.class);
                 intent.putExtra("exercise_name", exercise.getName());
-                intent.putExtra("id_exercise", exercise.getId());
-                intent.putExtra("id_do_workout", doWorkout.getId());
-                startActivityForResult(intent, 1);
+                intent.putExtra("exercise_id", exercise.getId());
+                intent.putExtra("do_workout_id", doWorkout.getId());
+                System.out.println("IS EDITING = " + doViewModel.isEditing());
+                if (doViewModel.isEditing()) {
+                    intent.putExtra("ids", doViewModel.getIds().toArray(new String[0]));
+                    intent.putExtra("reps", doViewModel.getReps().toArray(new String[0]));
+                    System.out.println("reps.size : " + doViewModel.getReps().toArray(new String[0]).length);
+                    intent.putExtra("kgs", doViewModel.getKgs().toArray(new String[0]));
+                    Toast.makeText(DoWorkoutActivity.this, "EDITing", Toast.LENGTH_SHORT).show();
+                    startActivityForResult(intent, 2);
+                } else startActivityForResult(intent, 1);
             }
         });
 
@@ -116,8 +207,8 @@ public class DoWorkoutActivity extends AppCompatActivity {
 
             for (int p = 0; p < countOfSeries; p++) {
                 try {
-
-                    seriesViewModel.insert(new WorkoutSerie(doWorkoutId,exerciseId,Integer.valueOf(reps[p]), Integer.valueOf(kg[p])));
+                    System.out.println("EXERCISE ID = " + exerciseId);
+                    seriesViewModel.insert(new WorkoutSerie(doWorkoutId, exerciseId, Integer.valueOf(reps[p]), Integer.valueOf(kg[p])));
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -127,35 +218,56 @@ public class DoWorkoutActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Results saved", Toast.LENGTH_SHORT).show();
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
-//            int id = data.getIntExtra(AddEditPlanActivity.EXTRA_ID, -1);
-//
-//            if (id == -1) {
-//                Toast.makeText(this, "Plan can't be updated", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//            String title = data.getStringExtra(AddEditPlanActivity.EXTRA_TITLE);
-//            String description = data.getStringExtra(AddEditPlanActivity.EXTRA_DESCRIPTION);
-//            int priority = data.getIntExtra(AddEditPlanActivity.EXTRA_PRIORITY, 1);
-//            String exercises = data.getStringExtra(AddEditPlanActivity.EXTRA_EXERCISES);
-//
-//            Plan plan = new Plan(title, description, "fdafds");
-//            plan.setId(id);
-//            planViewModel.update(plan);
-//
-//            mainViewModel.setPickExercises(exercises);
-//            mainViewModel.makePickExercises();
-//
-//            System.out.println("SIZE new exercises: " + mainViewModel.getListPickExercises().size());
-//            exerciseToPlanViewModel.deleteExercisesOfPlan(Integer.valueOf(plan.getId()));
-//            for (Integer i : mainViewModel.getListPickExercises()) {
-//                System.out.println("ADDING new exercises: " + i);
-//                ExerciseToPlan e2p = new ExerciseToPlan(Integer.valueOf(plan.getId()), i);
-//                exerciseToPlanViewModel.insert(e2p);
-//            }
+            int exerciseId = data.getIntExtra("exercise_id", -1);
+            int doWorkoutId = data.getIntExtra("do_workout_id", -1);
+            int countOfSeries = data.getIntExtra("series", -1);
+            //List<String> reps = data.getStringArrayListExtra("reps");
+            String[] reps = data.getStringArrayExtra("reps");
+            String[] kg = data.getStringArrayExtra("kg");
+            String[] ids = data.getStringArrayExtra("ids");
 
-            Toast.makeText(this, "Plan updated", Toast.LENGTH_SHORT).show();
+            System.out.println("CNT OF SERIES " + countOfSeries);
+            for (int p = 0; p < countOfSeries; p++) {
+                WorkoutSerie workoutSerie = new WorkoutSerie(doWorkoutId, exerciseId, Integer.valueOf(reps[p]), Integer.valueOf(kg[p]));
+                workoutSerie.setId(Integer.valueOf(ids[p]));
+                System.out.println("EXERCISE ID = " + ids[p]);
+                seriesViewModel.update(workoutSerie);
+            }
+            Toast.makeText(this, "Results updated", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Plan not saved", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+
+    private void saveWorkout() {
+        Intent data = new Intent();
+        data.putExtra("idOfWorkout", idOfWorkout);
+        data.putExtra("idOfPlan", idOfPlan);
+
+
+        setResult(RESULT_OK, data);
+        finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.add_plan_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_plan:
+                saveWorkout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
 }
