@@ -12,55 +12,57 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AddEditExerciseActivity extends AppCompatActivity {
-    public static final String EXTRA_TITLE = "com.mkt.plan4workout.EXTRA_TITLE";
-    public static final String EXTRA_DESCRIPTION = "com.mkt.plan4workout.EXTRA_DESCRIPTION";
-    public static final String EXTRA_PRIORITY = "com.mkt.plan4workout.EXTRA_PRIORITY";
+    public static final String EXTRA_EXERCISE_NAME = "com.mkt.plan4workout.EXTRA_EXERCISE_NAME";
+    public static final String EXTRA_EXERCISE_CATEGORY = "com.mkt.plan4workout.EXTRA_EXERCISE_CATEGORY";
+    public static final String EXTRA_EXERCISE_TYPE = "com.mkt.plan4workout.EXTRA_EXERCISE_TYPE";
+    public static final String EXTRA_EXERCISE_DESCRIPTION = "com.mkt.plan4workout.EXTRA_EXERCISE_DESCRIPTION";
     public static final String EXTRA_ID = "com.mkt.plan4workout.EXTRA_ID";
 
 
-    private EditText editTextTitle;
-    private EditText editTextDescription;
-    private NumberPicker numberPickerPriority;
+    private EditText etExerciseName;
+    private EditText etExerciseCategory;
+    private EditText etExerciseType;
+    private EditText etExerciseDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exercise);
+        //getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
 
-        editTextTitle = findViewById(R.id.edit_text_title);
-        editTextDescription = findViewById(R.id.edit_text_description);
-        numberPickerPriority = findViewById(R.id.number_picker_priority);
-
-        numberPickerPriority.setMinValue(1);
-        numberPickerPriority.setMaxValue(9);
-
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
+        etExerciseName = findViewById(R.id.et_name);
+        etExerciseCategory = findViewById(R.id.et_category);
+        etExerciseType = findViewById(R.id.et_type);
+        etExerciseDescription = findViewById(R.id.et_description);
 
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_ID)) {
             setTitle("Edit exercise");
-            editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
-            editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
-            numberPickerPriority.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
+            etExerciseName.setText(intent.getStringExtra(EXTRA_EXERCISE_NAME));
+            etExerciseCategory.setText(intent.getStringExtra(EXTRA_EXERCISE_CATEGORY));
+            etExerciseType.setText(intent.getStringExtra(EXTRA_EXERCISE_TYPE));
+            etExerciseDescription.setText(intent.getStringExtra(EXTRA_EXERCISE_DESCRIPTION));
         } else {
             setTitle("Add exercise");
         }
     }
 
     private void saveExercise() {
-        String title = editTextTitle.getText().toString();
-        String description = editTextDescription.getText().toString();
-        int priority = numberPickerPriority.getValue();
+        String exerciseName = etExerciseName.getText().toString();
+        String exerciseCategory = etExerciseCategory.getText().toString();
+        String exerciseType = etExerciseType.getText().toString();
+        String exerciseDescription = etExerciseDescription.getText().toString();
 
-        if (title.trim().isEmpty() || description.trim().isEmpty()) {
-            Toast.makeText(this, "Please insert a title and description", Toast.LENGTH_SHORT).show();
+        if (exerciseName.trim().isEmpty() ||exerciseCategory.trim().isEmpty() || exerciseType.trim().isEmpty() || exerciseDescription.isEmpty()) {
+            Toast.makeText(this, "Please insert a name, category and description", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Intent data = new Intent();
-        data.putExtra(EXTRA_TITLE, title);
-        data.putExtra(EXTRA_DESCRIPTION, description);
-        data.putExtra(EXTRA_PRIORITY, priority);
+        data.putExtra(EXTRA_EXERCISE_NAME, exerciseName);
+        data.putExtra(EXTRA_EXERCISE_CATEGORY, exerciseCategory);
+        data.putExtra(EXTRA_EXERCISE_TYPE, exerciseType);
+        data.putExtra(EXTRA_EXERCISE_DESCRIPTION, exerciseDescription);
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {

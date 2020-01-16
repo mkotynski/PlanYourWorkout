@@ -96,16 +96,14 @@ public class AddExerciseToPlan extends AppCompatActivity {
             public void onItemViewClick(View itemView, Exercise exercise) {
                 if (exercisePickViewModel.isChoosen(exercise)) {
                     exercisePickViewModel.delExercise(exercise);
-                    //pick.remove(Integer.valueOf(exercise.getId()));
                     itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorWhite));
-                    TextView title = itemView.findViewById(R.id.text_view_title);
-                    title.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorBlack));
+                    TextView name = itemView.findViewById(R.id.tv_exercise_name);
+                    name.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorBlack));
 
                 } else {
                     exercisePickViewModel.addExercise(exercise);
-                    //pick.add(Integer.valueOf(exercise.getId()));
                     itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), R.color.colorPrimary));
-                    TextView title = itemView.findViewById(R.id.text_view_title);
+                    TextView title = itemView.findViewById(R.id.tv_exercise_name);
                     title.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.colorWhite));
                 }
             }

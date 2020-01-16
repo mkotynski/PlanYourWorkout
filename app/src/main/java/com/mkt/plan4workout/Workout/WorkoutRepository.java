@@ -44,7 +44,7 @@ public class WorkoutRepository {
         return asyncTask.execute().get();
     }
 
-    public Workout getPlanByDate(String date) throws ExecutionException, InterruptedException {
+    public LiveData<Workout> getPlanByDate(String date) throws ExecutionException, InterruptedException {
         GetWorkoutByDateAsyncTask asyncTask = new GetWorkoutByDateAsyncTask(workoutDao, date);
         return asyncTask.execute().get();
     }
@@ -129,7 +129,7 @@ public class WorkoutRepository {
         }
     }
 
-    private static class GetWorkoutByDateAsyncTask extends AsyncTask<Void, Void, Workout> {
+    private static class GetWorkoutByDateAsyncTask extends AsyncTask<Void, Void, LiveData<Workout>> {
         private WorkoutDao workoutDao;
         private String date;
 
@@ -139,7 +139,7 @@ public class WorkoutRepository {
         }
 
         @Override
-        protected Workout doInBackground(Void... voids) {
+        protected LiveData<Workout> doInBackground(Void... voids) {
             return workoutDao.getWorkoutByDate(date);
         }
     }

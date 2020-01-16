@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@color/colorNotExactlyWhite">
 
     <RelativeLayout
         android:id="@+id/linear_layout_tags"
@@ -14,24 +15,27 @@
         <Button
             android:id="@+id/button_exercise"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:layout_height="60dp"
+            android:textColor="@color/colorWhite"
             android:text="Exercises" />
         <Button
             android:id="@+id/button_calendar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:layout_below="@+id/button_exercise"
+            android:textColor="@color/colorWhite"
             android:layout_marginTop="10dp"
             android:text="Calendar" />
         <Button
             android:id="@+id/button_do_workout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="60dp"
             android:layout_below="@+id/button_calendar"
             android:text="Do Today's Workout"
+            android:textColor="@color/colorWhite"
             android:layout_marginTop="10dp"
-            android:visibility="invisible"/>
+            android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -46,9 +50,9 @@
         android:id="@+id/button_add_plan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_add"
         android:layout_gravity="bottom|end"
         android:layout_margin="32dp"
-        />
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/colorPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

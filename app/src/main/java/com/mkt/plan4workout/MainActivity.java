@@ -9,17 +9,14 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.annimon.stream.Stream;
@@ -44,17 +41,18 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import kotlinx.coroutines.scheduling.WorkQueueKt;
-
 public class MainActivity extends AppCompatActivity implements OnSelectDateListener {
     public static final int ADD_PLAN_REQUEST = 1;
     public static final int EDIT_PLAN_REQUEST = 2;
+    public static final int DO_WORKOUT_REQUEST = 3;
+
     private PlanViewModel planViewModel;
     private ExerciseToPlanViewModel exerciseToPlanViewModel;
     private MainActivityViewModel mainViewModel;
     private WorkoutViewModel workoutViewModel;
     Calendar calendar;
     Button buttonDoWorkout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,10 +119,10 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
             @Override
             public void onItemClick(Plan plan) {
                 Intent intent = new Intent(MainActivity.this, AddEditPlanActivity.class);
+                intent.putExtra(AddEditPlanActivity.EXTRA_PLAN_NAME, plan.getName());
+                intent.putExtra(AddEditPlanActivity.EXTRA_PLAN_CATEGORY, plan.getCategory());
+                intent.putExtra(AddEditPlanActivity.EXTRA_PLAN_DESCRIPTION, plan.getDescription());
                 intent.putExtra(AddEditPlanActivity.EXTRA_ID, plan.getId());
-                intent.putExtra(AddEditPlanActivity.EXTRA_TITLE, plan.getName());
-                intent.putExtra(AddEditPlanActivity.EXTRA_DESCRIPTION, plan.getDescription());
-                intent.putExtra(AddEditPlanActivity.EXTRA_PRIORITY, plan.getCateogry());
 
                 try {
                     String exercisesString = mainViewModel.makeStringFromList(exerciseToPlanViewModel.getExercisesOfPlan(plan.getId()));
@@ -134,46 +132,50 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
                 startActivityForResult(intent, EDIT_PLAN_REQUEST);
 
             }
-            @Override
-            public void onItemViewClick(View itemView, Plan plan){
 
+            @Override
+            public void onItemViewClick(View itemView, Plan plan) {
             }
 
         });
         calendar = Calendar.getInstance();
+
+
         try {
             System.out.println(calendar.getTime().toString());
             String timer[] = calendar.getTime().toString().split(" ");
             timer[3] = "00:00:00";
             String date = Arrays.toString(timer);
             date = date.replace(",", "");
-            date = date.substring(1,date.lastIndexOf("]"));
+            date = date.substring(1, date.lastIndexOf("]"));
             System.out.println(date);
             final String fDate = date;
-            Workout workout = workoutViewModel.getWorkoutByDate(date);
-            if(workout != null && workout.getDone() == 0){
-                Toast.makeText(this, "DZIEN TRENINGOWY", Toast.LENGTH_SHORT).show();
-                buttonDoWorkout = findViewById(R.id.button_do_workout);
-                buttonDoWorkout.setVisibility(View.VISIBLE);
-                ViewGroup.LayoutParams params = buttonDoWorkout.getLayoutParams();
-                params.height = 170;
-                buttonDoWorkout.setLayoutParams(params);
+            workoutViewModel.getWorkoutByDate(date).observe(this, new Observer<Workout>() {
+                @Override
+                public void onChanged(Workout workout) {
+                    if (workout != null && workout.getDone() == 0) {
+                        Toast.makeText(MainActivity.this, "DZIEN TRENINGOWY", Toast.LENGTH_SHORT).show();
+                        buttonDoWorkout = findViewById(R.id.button_do_workout);
+                        buttonDoWorkout.setVisibility(View.VISIBLE);
+                        ViewGroup.LayoutParams params = buttonDoWorkout.getLayoutParams();
+                        buttonDoWorkout.setLayoutParams(params);
 
-                buttonDoWorkout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(MainActivity.this, DoWorkoutActivity.class);
-                        intent.putExtra("idOfPlan", Integer.valueOf(workout.getIdOfPlan()));
-                        intent.putExtra("idOfWorkout", Integer.valueOf(workout.getId()));
-                        //startActivity(intent);
-                        startActivityForResult(intent, 3);
+                        buttonDoWorkout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(MainActivity.this, DoWorkoutActivity.class);
+                                intent.putExtra("idOfPlan", Integer.valueOf(workout.getIdOfPlan()));
+                                intent.putExtra("idOfWorkout", Integer.valueOf(workout.getId()));
+                                //startActivity(intent);
+                                startActivityForResult(intent, 3);
+                            }
+                        });
                     }
-                });
-            }
+                }
+            });
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -186,12 +188,12 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ADD_PLAN_REQUEST && resultCode == RESULT_OK) {
-            String title = data.getStringExtra(AddEditPlanActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddEditPlanActivity.EXTRA_DESCRIPTION);
-            String exercises = data.getStringExtra(AddEditPlanActivity.EXTRA_EXERCISES);
-            int priority = data.getIntExtra(AddEditPlanActivity.EXTRA_PRIORITY, 1);
+            String planName = data.getStringExtra(AddEditPlanActivity.EXTRA_PLAN_NAME);
+            String planCategory = data.getStringExtra(AddEditPlanActivity.EXTRA_PLAN_CATEGORY);
+            String planDescription = data.getStringExtra(AddEditPlanActivity.EXTRA_PLAN_DESCRIPTION);
+            String planExercises = data.getStringExtra(AddEditPlanActivity.EXTRA_EXERCISES);
+            Plan plan = new Plan(planName, planCategory, planDescription);
             long id = 0;
-            Plan plan = new Plan(title, description, String.valueOf(priority));
             try {
                 id = planViewModel.insert(plan);
             } catch (ExecutionException e) {
@@ -199,47 +201,45 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            mainViewModel.setPickExercises(exercises);
+            mainViewModel.setPickExercises(planExercises);
             mainViewModel.makePickExercises();
 
             System.out.println("SIZE new exercises: " + mainViewModel.getListPickExercises().size());
-            for(Integer i: mainViewModel.getListPickExercises()){
+            for (Integer i : mainViewModel.getListPickExercises()) {
                 System.out.println("ADDING new exercises: " + i);
-                ExerciseToPlan e2p = new ExerciseToPlan((int)id,i);
+                ExerciseToPlan e2p = new ExerciseToPlan((int) id, i);
                 System.out.println(e2p.getPlanId() + " - " + e2p.getExerciseId());
                 exerciseToPlanViewModel.insert(e2p);
             }
 
             Toast.makeText(this, "Plan saved", Toast.LENGTH_SHORT).show();
-        } else  if (requestCode == EDIT_PLAN_REQUEST && resultCode == RESULT_OK) {
-            int id = data.getIntExtra(AddEditPlanActivity.EXTRA_ID, -1);
+        } else if (requestCode == EDIT_PLAN_REQUEST && resultCode == RESULT_OK) {
+            String planName = data.getStringExtra(AddEditPlanActivity.EXTRA_PLAN_NAME);
+            String planCategory = data.getStringExtra(AddEditPlanActivity.EXTRA_PLAN_CATEGORY);
+            String planDescription = data.getStringExtra(AddEditPlanActivity.EXTRA_PLAN_DESCRIPTION);
+            String planExercises = data.getStringExtra(AddEditPlanActivity.EXTRA_EXERCISES);
+            Plan plan = new Plan(planName, planCategory, planDescription);
 
+            int id = data.getIntExtra(AddEditPlanActivity.EXTRA_ID, -1);
             if (id == -1) {
                 Toast.makeText(this, "Plan can't be updated", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String title = data.getStringExtra(AddEditPlanActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddEditPlanActivity.EXTRA_DESCRIPTION);
-            int priority = data.getIntExtra(AddEditPlanActivity.EXTRA_PRIORITY, 1);
-            String exercises = data.getStringExtra(AddEditPlanActivity.EXTRA_EXERCISES);
-
-            Plan plan = new Plan(title, description, "fdafds");
             plan.setId(id);
             planViewModel.update(plan);
 
-            mainViewModel.setPickExercises(exercises);
+            mainViewModel.setPickExercises(planExercises);
             mainViewModel.makePickExercises();
 
-            System.out.println("SIZE new exercises: " + mainViewModel.getListPickExercises().size());
             exerciseToPlanViewModel.deleteExercisesOfPlan(Integer.valueOf(plan.getId()));
-            for(Integer i: mainViewModel.getListPickExercises()){
-                System.out.println("ADDING new exercises: " + i);
-                ExerciseToPlan e2p = new ExerciseToPlan(Integer.valueOf(plan.getId()),i);
+
+            for (Integer i : mainViewModel.getListPickExercises()) {
+                ExerciseToPlan e2p = new ExerciseToPlan(Integer.valueOf(plan.getId()), i);
                 exerciseToPlanViewModel.insert(e2p);
             }
 
             Toast.makeText(this, "Plan updated", Toast.LENGTH_SHORT).show();
-        } else  if (requestCode == 3 && resultCode == RESULT_OK) {
+        } else if (requestCode == DO_WORKOUT_REQUEST && resultCode == RESULT_OK) {
             int id = data.getIntExtra("idOfWorkout", -1);
             int idOfPlan = data.getIntExtra("idOfPlan", -1);
 
@@ -251,14 +251,15 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
             timer[3] = "00:00:00";
             String date = Arrays.toString(timer);
             date = date.replace(",", "");
-            date = date.substring(1,date.lastIndexOf("]"));
+            date = date.substring(1, date.lastIndexOf("]"));
             System.out.println(date);
             final String fDate = date;
 
-            Workout workout= new Workout(idOfPlan,fDate, 1);
+            Workout workout = new Workout(idOfPlan, fDate, 1);
             workout.setId(id);
             workoutViewModel.update(workout);
-
+            finish();
+            startActivity(getIntent());
             Toast.makeText(this, "Workout done", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Problem with saving", Toast.LENGTH_SHORT).show();
@@ -396,8 +397,6 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
     }
 
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
+    public void onPointerCaptureChanged(boolean hasCapture) { }
 
 }

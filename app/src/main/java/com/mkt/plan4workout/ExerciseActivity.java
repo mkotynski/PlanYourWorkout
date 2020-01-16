@@ -30,8 +30,8 @@ import java.util.List;
 
 public class ExerciseActivity extends AppCompatActivity {
 
-    public static final int ADD_PLAN_REQUEST = 1;
-    public static final int EDIT_PLAN_REQUEST = 2;
+    public static final int ADD_EXERCISE_REQUEST = 1;
+    public static final int EDIT_EXERCISE_REQUEST = 2;
 
     ExerciseViewModel exerciseViewModel;
 
@@ -44,10 +44,10 @@ public class ExerciseActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ExerciseActivity.this, AddEditExerciseActivity.class);
-                startActivityForResult(intent, ADD_PLAN_REQUEST);
+                startActivityForResult(intent, ADD_EXERCISE_REQUEST);
             }
         });
-
+        exerciseViewModel = ViewModelProviders.of(this).get(ExerciseViewModel.class);
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
@@ -55,7 +55,6 @@ public class ExerciseActivity extends AppCompatActivity {
         final ExerciseAdapter adapter = new ExerciseAdapter();
         recyclerView.setAdapter(adapter);
 
-        exerciseViewModel = ViewModelProviders.of(this).get(ExerciseViewModel.class);
         exerciseViewModel.getAllExercises().observe(this, new Observer<List<Exercise>>() {
             @Override
             public void onChanged(List<Exercise> exercises) {
@@ -81,11 +80,12 @@ public class ExerciseActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Exercise exercise) {
                 Intent intent = new Intent(ExerciseActivity.this, AddEditExerciseActivity.class);
-                intent.putExtra(AddEditPlanActivity.EXTRA_ID, exercise.getId());
-                intent.putExtra(AddEditPlanActivity.EXTRA_TITLE, exercise.getName());
-                intent.putExtra(AddEditPlanActivity.EXTRA_DESCRIPTION, exercise.getDescription());
-                intent.putExtra(AddEditPlanActivity.EXTRA_PRIORITY, exercise.getType());
-                startActivityForResult(intent, EDIT_PLAN_REQUEST);
+                intent.putExtra(AddEditExerciseActivity.EXTRA_ID, exercise.getId());
+                intent.putExtra(AddEditExerciseActivity.EXTRA_EXERCISE_NAME, exercise.getName());
+                intent.putExtra(AddEditExerciseActivity.EXTRA_EXERCISE_CATEGORY, exercise.getCategory());
+                intent.putExtra(AddEditExerciseActivity.EXTRA_EXERCISE_TYPE, exercise.getType());
+                intent.putExtra(AddEditExerciseActivity.EXTRA_EXERCISE_DESCRIPTION, exercise.getDescription());
+                startActivityForResult(intent, EDIT_EXERCISE_REQUEST);
             }
 
             @Override
@@ -101,28 +101,24 @@ public class ExerciseActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        String exerciseName = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_NAME);
+        String exerciseCategory = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_CATEGORY);
+        String exerciseType = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_TYPE);
+        String exerciseDescription = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_DESCRIPTION);
 
-        if (requestCode == ADD_PLAN_REQUEST && resultCode == RESULT_OK) {
-            String title = data.getStringExtra(AddEditPlanActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddEditPlanActivity.EXTRA_DESCRIPTION);
-            int priority = data.getIntExtra(AddEditPlanActivity.EXTRA_PRIORITY, 1);
-
-            Exercise exercise = new Exercise(title, description, String.valueOf(priority), description);
+        if (requestCode == ADD_EXERCISE_REQUEST && resultCode == RESULT_OK) {
+            Exercise exercise = new Exercise(exerciseName, exerciseCategory, exerciseType, exerciseDescription);
             exerciseViewModel.insert(exercise);
 
             Toast.makeText(this, "Exercise saved", Toast.LENGTH_SHORT).show();
-        } else if (requestCode == EDIT_PLAN_REQUEST && resultCode == RESULT_OK) {
-            int id = data.getIntExtra(AddEditPlanActivity.EXTRA_ID, -1);
+        } else if (requestCode == EDIT_EXERCISE_REQUEST && resultCode == RESULT_OK) {
+            int id = data.getIntExtra(AddEditExerciseActivity.EXTRA_ID, -1);
 
             if (id == -1) {
                 Toast.makeText(this, "Exercise can't be updated", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String title = data.getStringExtra(AddEditPlanActivity.EXTRA_TITLE);
-            String description = data.getStringExtra(AddEditPlanActivity.EXTRA_DESCRIPTION);
-            int priority = data.getIntExtra(AddEditPlanActivity.EXTRA_PRIORITY, 1);
-
-            Exercise exercise = new Exercise(title, description, "fdafds", "..");
+            Exercise exercise = new Exercise(exerciseName, exerciseCategory, exerciseType, exerciseDescription);
             exercise.setId(id);
             exerciseViewModel.update(exercise);
 

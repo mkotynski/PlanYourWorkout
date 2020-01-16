@@ -8,8 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mkt.plan4workout.Exercise.Exercise;
-import com.mkt.plan4workout.Exercise.ExerciseAdapterPick;
 import com.mkt.plan4workout.R;
 
 import java.util.ArrayList;
@@ -30,9 +28,9 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanHolder> {
     @Override
     public void onBindViewHolder(@NonNull PlanHolder holder, int position) {
         Plan currentPlan = plans.get(position);
-        holder.textViewTitle.setText(currentPlan.getName());
-        holder.textViewDescription.setText(currentPlan.getDescription());
-        holder.textViewPriority.setText(String.valueOf(currentPlan.getCateogry()));
+        holder.tvPlanName.setText(currentPlan.getName());
+        holder.tvPlanDescription.setText(currentPlan.getDescription());
+        holder.tvPlanCategory.setText(String.valueOf(currentPlan.getCategory()));
     }
 
     @Override
@@ -50,15 +48,15 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.PlanHolder> {
     }
 
     class PlanHolder extends RecyclerView.ViewHolder {
-        private TextView textViewTitle;
-        private TextView textViewDescription;
-        private TextView textViewPriority;
+        private TextView tvPlanName;
+        private TextView tvPlanCategory;
+        private TextView tvPlanDescription;
 
         public PlanHolder(View itemView) {
             super(itemView);
-            textViewTitle = itemView.findViewById(R.id.text_view_title);
-            textViewDescription = itemView.findViewById(R.id.text_view_description);
-            textViewPriority = itemView.findViewById(R.id.text_view_priority);
+            tvPlanName = itemView.findViewById(R.id.tv_plan_name);
+            tvPlanCategory = itemView.findViewById(R.id.tv_plan_category);
+            tvPlanDescription = itemView.findViewById(R.id.tv_plan_description);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

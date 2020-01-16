@@ -47,9 +47,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     @Override
     public void onBindViewHolder(@NonNull ExerciseHolder holder, int position) {
         Exercise currentPlan = exercises.get(position);
-        holder.textViewTitle.setText(currentPlan.getName());
-        holder.textViewDescription.setText(currentPlan.getDescription());
-        holder.textViewPriority.setText(String.valueOf(currentPlan.getType()));
+        holder.tvName.setText(currentPlan.getName());
+        holder.tvCategory.setText(currentPlan.getCategory());
+        holder.tvType.setText(String.valueOf(currentPlan.getType()));
+        holder.tvDescription.setText(String.valueOf(currentPlan.getDescription()));
 
         List<WorkoutSerie> exWorkoutSeries = new ArrayList<>();
         for (List<WorkoutSerie> ws : seriesWorkout) {
@@ -69,7 +70,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.addRule(RelativeLayout.BELOW, holder.textViewDescription.getId());
+            params.addRule(RelativeLayout.BELOW, holder.tvDescription.getId());
             LinearLayout.LayoutParams paramsInner = new LinearLayout.LayoutParams(
                     400,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -126,16 +127,18 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     }
 
     class ExerciseHolder extends RecyclerView.ViewHolder {
-        private TextView textViewTitle;
-        private TextView textViewDescription;
-        private TextView textViewPriority;
+        private TextView tvName;
+        private TextView tvCategory;
+        private TextView tvType;
+        private TextView tvDescription;
         private LinearLayout series;
 
         public ExerciseHolder(final View itemView) {
             super(itemView);
-            textViewTitle = itemView.findViewById(R.id.text_view_title);
-            textViewDescription = itemView.findViewById(R.id.text_view_description);
-            textViewPriority = itemView.findViewById(R.id.text_view_priority);
+            tvName = itemView.findViewById(R.id.tv_exercise_name);
+            tvCategory = itemView.findViewById(R.id.tv_exercise_category);
+            tvType = itemView.findViewById(R.id.tv_exercise_type);
+            tvDescription = itemView.findViewById(R.id.tv_exercise_description);
             series = (LinearLayout) itemView.findViewById(R.id.series_details);
 
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -145,7 +148,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     if (listener != null && position != RecyclerView.NO_POSITION) {
                         listener.onItemClick(exercises.get(position));
                         listener.onItemViewClick(itemView, exercises.get(position));
-                        listener.onDoWorkoutClick(itemView, exercises.get(position), doWorkouts.get(position));
+                        if(doWorkouts.size() > 0) listener.onDoWorkoutClick(itemView, exercises.get(position), doWorkouts.get(position));
                     }
                 }
             });

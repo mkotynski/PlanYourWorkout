@@ -6,58 +6,54 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class AddEditPlanActivity extends AppCompatActivity {
-    public static final String EXTRA_TITLE = "com.mkt.plan4workout.EXTRA_TITLE";
-    public static final String EXTRA_DESCRIPTION = "com.mkt.plan4workout.EXTRA_DESCRIPTION";
-    public static final String EXTRA_PRIORITY = "com.mkt.plan4workout.EXTRA_PRIORITY";
+    public static final String EXTRA_PLAN_NAME = "com.mkt.plan4workout.EXTRA_PLAN_NAME";
+    public static final String EXTRA_PLAN_CATEGORY = "com.mkt.plan4workout.EXTRA_PLAN_CATEGORY";
+    public static final String EXTRA_PLAN_DESCRIPTION = "com.mkt.plan4workout.EXTRA_PLAN_DESCRIPTION";
     public static final String EXTRA_ID = "com.mkt.plan4workout.EXTRA_ID";
     public static final String EXTRA_EXERCISES = "com.mkt.plan4workout.EXTRA_EXERCISES";
 
     public static final int ADD_EXERCISES_REQUEST = 1;
 
-    private EditText editTextTitle;
-    private EditText editTextDescription;
-    private NumberPicker numberPickerPriority;
+    private EditText etPlanName;
+    private EditText etPlanCategory;
+    private EditText etPlanDescription;
+
+
     private Button btnAddExercises;
     private TextView textViewChoosenExercises;
-    PlanActivityViewModel planActivityViewModel;
+
+    PlanActivityViewModel planViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_plan);
 
-        editTextTitle = findViewById(R.id.edit_text_title);
-        editTextDescription = findViewById(R.id.edit_text_description);
-        numberPickerPriority = findViewById(R.id.number_picker_priority);
+        etPlanName = findViewById(R.id.et_name);
+        etPlanCategory = findViewById(R.id.et_category);
+        etPlanDescription = findViewById(R.id.et_description);
         btnAddExercises = findViewById(R.id.button_add_exercises2plan);
         textViewChoosenExercises = findViewById(R.id.text_view_choosen_exercises);
 
-        numberPickerPriority.setMinValue(1);
-        numberPickerPriority.setMaxValue(9);
 
-        planActivityViewModel = ViewModelProviders.of(this).get(PlanActivityViewModel.class);
+        planViewModel = ViewModelProviders.of(this).get(PlanActivityViewModel.class);
+
 
         btnAddExercises.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AddEditPlanActivity.this, AddExerciseToPlan.class);
-                Bundle b = new Bundle();
-                System.out.println("GET PICKING: " + planActivityViewModel.getPickExercises());
-                Log.d("AddEditPlanActivity", "MSG: " + planActivityViewModel.getPickExercises());
-                b.putString("exercises",planActivityViewModel.getPickExercises());
-                intent.putExtras(b);
+                intent.putExtra(EXTRA_EXERCISES, planViewModel.getPickExercises());
                 startActivityForResult(intent, ADD_EXERCISES_REQUEST);
             }
         });
@@ -68,11 +64,11 @@ public class AddEditPlanActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_ID)) {
             setTitle("Edit note");
-            editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
-            editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
-            numberPickerPriority.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
-            planActivityViewModel.setPickExercises(intent.getStringExtra(EXTRA_EXERCISES));
-            textViewChoosenExercises.setText(planActivityViewModel.getPickExercises());
+            etPlanName.setText(intent.getStringExtra(EXTRA_PLAN_NAME));
+            etPlanCategory.setText(intent.getStringExtra(EXTRA_PLAN_CATEGORY));
+            etPlanDescription.setText(intent.getStringExtra(EXTRA_PLAN_DESCRIPTION));
+            planViewModel.setPickExercises(intent.getStringExtra(EXTRA_EXERCISES));
+            textViewChoosenExercises.setText(planViewModel.getPickExercises());
         } else {
             setTitle("Add note");
         }
@@ -83,9 +79,9 @@ public class AddEditPlanActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ADD_EXERCISES_REQUEST && resultCode == RESULT_OK) {
             String exercisesId = data.getStringExtra(AddExerciseToPlan.EXTRA_EXERCISES_ID);
-            if(exercisesId!=""){
+            if (!exercisesId.isEmpty()) {
                 textViewChoosenExercises.setText(exercisesId);
-                planActivityViewModel.setPickExercises(exercisesId);
+                planViewModel.setPickExercises(exercisesId);
             }
             Toast.makeText(this, "Exercises added", Toast.LENGTH_SHORT).show();
         } else {
@@ -95,20 +91,20 @@ public class AddEditPlanActivity extends AppCompatActivity {
 
 
     private void saveNote() {
-        String title = editTextTitle.getText().toString();
-        String description = editTextDescription.getText().toString();
-        int priority = numberPickerPriority.getValue();
+        String planName = etPlanName.getText().toString();
+        String planCategory = etPlanCategory.getText().toString();
+        String planDescription = etPlanDescription.getText().toString();
 
-        if (title.trim().isEmpty() || description.trim().isEmpty()) {
-            Toast.makeText(this, "Please insert a title and description", Toast.LENGTH_SHORT).show();
+        if (planName.trim().isEmpty() || planCategory.trim().isEmpty()|| planDescription.trim().isEmpty()) {
+            Toast.makeText(this, "Please insert a name, category and description", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Intent data = new Intent();
-        data.putExtra(EXTRA_TITLE, title);
-        data.putExtra(EXTRA_DESCRIPTION, description);
-        data.putExtra(EXTRA_PRIORITY, priority);
-        data.putExtra(EXTRA_EXERCISES, planActivityViewModel.getPickExercises());
+        data.putExtra(EXTRA_PLAN_NAME, planName);
+        data.putExtra(EXTRA_PLAN_CATEGORY, planCategory);
+        data.putExtra(EXTRA_PLAN_DESCRIPTION, planDescription);
+        data.putExtra(EXTRA_EXERCISES, planViewModel.getPickExercises());
 
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
         if (id != -1) {

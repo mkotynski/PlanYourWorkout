@@ -46,7 +46,7 @@ public class ExercisePickViewModel extends AndroidViewModel {
     }
 
     public void setExercisesList(String exercisesList) {
-        if(exercisesList.length() > 0) {
+        if(exercisesList != null) {
             this.exercisesList = exercisesList;
             allExercisesPick = makeExercisesList(exercisesList);
         }

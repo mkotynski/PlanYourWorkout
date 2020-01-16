@@ -22,7 +22,7 @@ import com.mkt.plan4workout.Workout.WorkoutDao;
 import com.mkt.plan4workout.WorkoutSerie.WorkoutSerie;
 import com.mkt.plan4workout.WorkoutSerie.WorkoutSerieDao;
 
-@Database(entities = {Plan.class, Exercise.class, ExerciseToPlan.class, Workout.class, DoWorkout.class, WorkoutSerie.class}, version = 8, exportSchema = false)
+@Database(entities = {Plan.class, Exercise.class, ExerciseToPlan.class, Workout.class, DoWorkout.class, WorkoutSerie.class}, version = 9, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;

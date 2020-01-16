@@ -4,8 +4,12 @@
     <color name="colorPrimaryLittleDark">#2F9606</color>
     <color name="colorPrimaryDark">#2B2B2B</color>
     <color name="colorAccent">#60E00E</color>
-    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhite">#F0F0F0</color>
+    <color name="colorNotWhite">#5C5C5C</color>
+    <color name="colorNotExactlyWhite">#DDDDDD</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorSecondaryGreen">#A3B94A</color>
+    <color name="colorSecondaryGrey">#383838</color>
 
     <color name="sampleDark">#1B5E20</color>
     <color name="sampleLight">#388E3C</color>

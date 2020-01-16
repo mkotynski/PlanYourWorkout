@@ -123,7 +123,13 @@ public class CalendarActivity extends AppCompatActivity {
             else {
                 //events.remove(eventDay);
                 try {
-                    workoutViewModel.delete(workoutViewModel.getWorkoutByDate(selectedDate.getTime().toString()));
+                    workoutViewModel.getWorkoutByDate(selectedDate.getTime().toString()).observe(this, new Observer<Workout>() {
+                        @Override
+                        public void onChanged(Workout workout) {
+                            workoutViewModel.delete(workout);
+                        }
+                    });
+
                     finish();
                     startActivity(getIntent());
                 } catch (ExecutionException e) {

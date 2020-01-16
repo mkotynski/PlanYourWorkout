@@ -27,26 +27,24 @@ public class ExerciseAdapterPick extends RecyclerView.Adapter<ExerciseAdapterPic
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.exercise_item, parent, false);
         context = parent.getContext();
-        //addExercisesToPlanViewModel = ViewModelProviders.of().get(AddExercisesToPlanViewModel.class);
-
         return new ExerciseHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ExerciseHolder holder, int position) {
         Exercise currentPlan = exercises.get(position);
-        holder.textViewTitle.setText(currentPlan.getName());
-        holder.textViewDescription.setText(currentPlan.getDescription());
-        holder.textViewPriority.setText(String.valueOf(currentPlan.getType()));
+        holder.tvName.setText(currentPlan.getName());
+        holder.tvCategory.setText(currentPlan.getCategory());
+        holder.tvType.setText(String.valueOf(currentPlan.getType()));
+        holder.tvDescription.setText(String.valueOf(currentPlan.getDescription()));
 
-        if(!pick.contains(currentPlan.getId())){
+        if (!pick.contains(currentPlan.getId())) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorWhite));
-            TextView title = holder.itemView.findViewById(R.id.text_view_title);
+            TextView title = holder.itemView.findViewById(R.id.tv_exercise_name);
             title.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorBlack));
-        }
-        else{
+        } else {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorPrimary));
-            TextView title = holder.itemView.findViewById(R.id.text_view_title);
+            TextView title = holder.itemView.findViewById(R.id.tv_exercise_name);
             title.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.colorWhite));
         }
         System.out.println(currentPlan.getId());
@@ -68,15 +66,17 @@ public class ExerciseAdapterPick extends RecyclerView.Adapter<ExerciseAdapterPic
     }
 
     class ExerciseHolder extends RecyclerView.ViewHolder {
-        private TextView textViewTitle;
-        private TextView textViewDescription;
-        private TextView textViewPriority;
+        private TextView tvName;
+        private TextView tvCategory;
+        private TextView tvType;
+        private TextView tvDescription;
 
         public ExerciseHolder(final View itemView) {
             super(itemView);
-            textViewTitle = itemView.findViewById(R.id.text_view_title);
-            textViewDescription = itemView.findViewById(R.id.text_view_description);
-            textViewPriority = itemView.findViewById(R.id.text_view_priority);
+            tvName = itemView.findViewById(R.id.tv_exercise_name);
+            tvCategory = itemView.findViewById(R.id.tv_exercise_category);
+            tvType = itemView.findViewById(R.id.tv_exercise_type);
+            tvDescription = itemView.findViewById(R.id.tv_exercise_description);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

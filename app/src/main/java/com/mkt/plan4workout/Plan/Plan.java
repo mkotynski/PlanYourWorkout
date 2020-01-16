@@ -10,13 +10,13 @@ public class Plan {
 
     private String name;
 
-    private String cateogry; // for example push, fbw, pull, split(up)
+    private String category; // for example push, fbw, pull, split(up)
 
     private String description;
 
-    public Plan(String name, String cateogry, String description) {
+    public Plan(String name, String category, String description) {
         this.name = name;
-        this.cateogry = cateogry;
+        this.category = category;
         this.description = description;
     }
 
@@ -32,8 +32,8 @@ public class Plan {
         return name;
     }
 
-    public String getCateogry() {
-        return cateogry;
+    public String getCategory() {
+        return category;
     }
 
     public String getDescription(){

@@ -32,5 +32,5 @@ public interface WorkoutDao {
     Workout getWorkout(int idWorkout);
 
     @Query("SELECT * FROM workout_table WHERE date = :date")
-    Workout getWorkoutByDate(String date);
+    LiveData<Workout> getWorkoutByDate(String date);
 }

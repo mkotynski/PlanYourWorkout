@@ -46,7 +46,7 @@ public class WorkoutViewModel extends AndroidViewModel {
         return repository.getPlan(id);
     }
 
-    public Workout getWorkoutByDate(String date) throws ExecutionException, InterruptedException {
+    public LiveData<Workout> getWorkoutByDate(String date) throws ExecutionException, InterruptedException {
         return repository.getPlanByDate(date);
     }
 }
