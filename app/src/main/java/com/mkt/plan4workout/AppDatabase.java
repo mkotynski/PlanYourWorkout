@@ -9,18 +9,18 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.mkt.plan4workout.DoWorkout.DoWorkout;
-import com.mkt.plan4workout.DoWorkout.DoWorkoutDao;
-import com.mkt.plan4workout.Exercise.Exercise;
-import com.mkt.plan4workout.Exercise.ExerciseDao;
-import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlan;
-import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlanDao;
-import com.mkt.plan4workout.Plan.Plan;
-import com.mkt.plan4workout.Plan.PlanDao;
-import com.mkt.plan4workout.Workout.Workout;
-import com.mkt.plan4workout.Workout.WorkoutDao;
-import com.mkt.plan4workout.WorkoutSerie.WorkoutSerie;
-import com.mkt.plan4workout.WorkoutSerie.WorkoutSerieDao;
+import com.mkt.plan4workout.Model.DoWorkout.DoWorkout;
+import com.mkt.plan4workout.Model.DoWorkout.DoWorkoutDao;
+import com.mkt.plan4workout.Model.Exercise.Exercise;
+import com.mkt.plan4workout.Model.Exercise.ExerciseDao;
+import com.mkt.plan4workout.Model.ExerciseToPlan.ExerciseToPlan;
+import com.mkt.plan4workout.Model.ExerciseToPlan.ExerciseToPlanDao;
+import com.mkt.plan4workout.Model.Plan.Plan;
+import com.mkt.plan4workout.Model.Plan.PlanDao;
+import com.mkt.plan4workout.Model.Workout.Workout;
+import com.mkt.plan4workout.Model.Workout.WorkoutDao;
+import com.mkt.plan4workout.Model.WorkoutSerie.WorkoutSerie;
+import com.mkt.plan4workout.Model.WorkoutSerie.WorkoutSerieDao;
 
 @Database(entities = {Plan.class, Exercise.class, ExerciseToPlan.class, Workout.class, DoWorkout.class, WorkoutSerie.class}, version = 9, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {

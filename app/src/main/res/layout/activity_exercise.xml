@@ -4,14 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ExerciseActivity">
+    tools:context=".View.ExerciseActivity"
+    android:background="@color/colorNotExactlyWhite">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+    <TextView
+        android:id="@+id/tv_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="9dp"
+        android:textAlignment="center"
+        android:text="EXERCISE'S LIST"
+        android:background="@color/colorPrimary"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/colorWhite"
+        android:layout_marginTop="10dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/recycler_view"
+            android:layout_below="@+id/tv_label"
             tools:listitem="@layout/exercise_item" />
-
+    </RelativeLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_add_exercise"
         android:layout_width="wrap_content"
@@ -19,6 +37,7 @@
         android:src="@drawable/ic_add"
         android:layout_gravity="bottom|end"
         android:layout_margin="32dp"
+        app:backgroundTint="@color/colorPrimary"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

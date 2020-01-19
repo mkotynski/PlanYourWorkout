@@ -9,15 +9,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:background="@drawable/border">
+        android:padding="8dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/tv_plan_name"
             android:text="Monday Full Body Workout"
-            android:textColor="@color/colorWhite"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:maxLines="1"
             android:layout_alignParentStart="true"
@@ -28,7 +26,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_plan_category"
-            android:textColor="@color/colorWhite"
             android:layout_below="@id/tv_plan_name"
             android:text="Category: Full Body Workout"
             />
@@ -36,7 +33,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_plan_description"
-            android:textColor="@color/colorWhite"
             android:layout_below="@id/tv_plan_category"
             android:text="Krotki opis treningu"
             android:padding="10dp"

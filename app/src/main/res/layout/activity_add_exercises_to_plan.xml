@@ -4,20 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ExerciseActivity">
+    tools:context=".View.ExerciseActivity"
+    android:background="@color/colorNotExactlyWhite">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/texting"
-        android:text="Cos tam"
-        />
     <Button
-        android:layout_below="@id/texting"
         android:id="@+id/button_save_choosen_exercises"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add choosen exercises to your plan"
+        android:padding="20dp"
+        android:textColor="@color/colorWhite"
         />
 
     <androidx.recyclerview.widget.RecyclerView

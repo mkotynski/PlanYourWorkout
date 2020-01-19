@@ -3,7 +3,6 @@ package com.mkt.plan4workout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,23 +19,23 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.annimon.stream.Stream;
-import com.applandeo.materialcalendarview.CalendarUtils;
-import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.DatePicker;
-import com.applandeo.materialcalendarview.builders.DatePickerBuilder;
 import com.applandeo.materialcalendarview.listeners.OnSelectDateListener;
-import com.applandeo.materialcalendarview.utils.DateUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlan;
-import com.mkt.plan4workout.ExerciseToPlan.ExerciseToPlanViewModel;
-import com.mkt.plan4workout.Plan.Plan;
-import com.mkt.plan4workout.Plan.PlanAdapter;
-import com.mkt.plan4workout.Plan.PlanViewModel;
-import com.mkt.plan4workout.Workout.Workout;
-import com.mkt.plan4workout.Workout.WorkoutViewModel;
+import com.mkt.plan4workout.View.AddEditPlanActivity;
+import com.mkt.plan4workout.View.CalendarActivity;
+import com.mkt.plan4workout.View.DoWorkoutActivity;
+import com.mkt.plan4workout.View.ExerciseActivity;
+import com.mkt.plan4workout.View.SwipeToDeleteCallback;
+import com.mkt.plan4workout.ViewModel.DoWorkoutViewModel;
+import com.mkt.plan4workout.Model.ExerciseToPlan.ExerciseToPlan;
+import com.mkt.plan4workout.ViewModel.ExerciseToPlanViewModel;
+import com.mkt.plan4workout.Model.Plan.Plan;
+import com.mkt.plan4workout.View.Adapter.PlanAdapter;
+import com.mkt.plan4workout.ViewModel.MainActivityViewModel;
+import com.mkt.plan4workout.ViewModel.PlanViewModel;
+import com.mkt.plan4workout.Model.Workout.Workout;
+import com.mkt.plan4workout.ViewModel.WorkoutViewModel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
     private ExerciseToPlanViewModel exerciseToPlanViewModel;
     private MainActivityViewModel mainViewModel;
     private WorkoutViewModel workoutViewModel;
-    Calendar calendar;
+    private DoWorkoutViewModel doWorkoutViewModel;
     Button buttonDoWorkout;
 
     @Override
@@ -59,12 +58,9 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
         setContentView(R.layout.activity_main);
 
         Button buttonExercise = findViewById(R.id.button_exercise);
-        buttonExercise.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ExerciseActivity.class);
-                startActivity(intent);
-            }
+        buttonExercise.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ExerciseActivity.class);
+            startActivity(intent);
         });
 
         Button buttonCalendar = findViewById(R.id.button_calendar);
@@ -74,12 +70,9 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
         });
 
         FloatingActionButton buttonAddNote = findViewById(R.id.button_add_plan);
-        buttonAddNote.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddEditPlanActivity.class);
-                startActivityForResult(intent, ADD_PLAN_REQUEST);
-            }
+        buttonAddNote.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AddEditPlanActivity.class);
+            startActivityForResult(intent, ADD_PLAN_REQUEST);
         });
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -93,16 +86,14 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
         exerciseToPlanViewModel = ViewModelProviders.of(this).get(ExerciseToPlanViewModel.class);
         mainViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
         workoutViewModel = ViewModelProviders.of(this).get(WorkoutViewModel.class);
+        doWorkoutViewModel = ViewModelProviders.of(this).get(DoWorkoutViewModel.class);
 
-        planViewModel.getAllPlans().observe(this, new Observer<List<Plan>>() {
-            @Override
-            public void onChanged(List<Plan> plans) {
-                adapter.setPlans(plans);
-            }
+        planViewModel.getAllPlans().observe(this, plans -> {
+            adapter.setPlans(plans);
         });
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false; // drag and drop functionality
@@ -110,10 +101,32 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                planViewModel.delete(adapter.getPlanAt(viewHolder.getAdapterPosition()));
-                Toast.makeText(MainActivity.this, "Plan deleted", Toast.LENGTH_SHORT).show();
+                int position = viewHolder.getAdapterPosition();
+                Plan item = adapter.getPlanAt(position);
+                boolean workoutsHere = false;
+                try {
+                    if(workoutViewModel.getWorkoutsByPlan(item.getId()).size() > 0) workoutsHere = true;
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(!workoutsHere) {
+                    exerciseToPlanViewModel.deleteExercisesOfPlan(item.getId());
+                    planViewModel.delete(adapter.getPlanAt(viewHolder.getAdapterPosition()));
+                    adapter.removeItem(position);
+                    Toast.makeText(MainActivity.this, "Plan deleted", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    adapter.restoreItemNo(item,position);
+                    clearView(recyclerView, viewHolder);
+                    Toast.makeText(MainActivity.this, "There are workouts in Calendar connected with this plan", Toast.LENGTH_SHORT).show();
+                }
             }
-        }).attachToRecyclerView(recyclerView);
+        };
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeToDeleteCallback);
+        itemTouchhelper.attachToRecyclerView(recyclerView);
 
         adapter.setOnItemClickListener(new PlanAdapter.OnItemClickListener() {
             @Override
@@ -141,39 +154,23 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
             }
 
         });
-        calendar = Calendar.getInstance();
-
 
         try {
-            System.out.println(calendar.getTime().toString());
-            String timer[] = calendar.getTime().toString().split(" ");
-            timer[3] = "00:00:00";
-            String date = Arrays.toString(timer);
-            date = date.replace(",", "");
-            date = date.substring(1, date.lastIndexOf("]"));
-            System.out.println(date);
-            final String fDate = date;
-            workoutViewModel.getWorkoutByDate(date).observe(this, new Observer<Workout>() {
-                @Override
-                public void onChanged(Workout workout) {
-                    if (workout != null && workout.getDone() == 0) {
-                        Toast.makeText(MainActivity.this, "DZIEN TRENINGOWY", Toast.LENGTH_SHORT).show();
-                        buttonDoWorkout = findViewById(R.id.button_do_workout);
-                        buttonDoWorkout.setVisibility(View.VISIBLE);
-                        ViewGroup.LayoutParams params = buttonDoWorkout.getLayoutParams();
-                        buttonDoWorkout.setLayoutParams(params);
+            String date = mainViewModel.getTodayDate();
+            workoutViewModel.getWorkoutByDateLD(date).observe(this, workout -> {
+                if (workout != null && workout.getDone() == 0) {
+                    Toast.makeText(MainActivity.this, "IT IS WORKOUT DAY!", Toast.LENGTH_SHORT).show();
+                    buttonDoWorkout = findViewById(R.id.button_do_workout);
+                    buttonDoWorkout.setVisibility(View.VISIBLE);
+                    ViewGroup.LayoutParams params = buttonDoWorkout.getLayoutParams();
+                    buttonDoWorkout.setLayoutParams(params);
 
-                        buttonDoWorkout.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(MainActivity.this, DoWorkoutActivity.class);
-                                intent.putExtra("idOfPlan", Integer.valueOf(workout.getIdOfPlan()));
-                                intent.putExtra("idOfWorkout", Integer.valueOf(workout.getId()));
-                                //startActivity(intent);
-                                startActivityForResult(intent, 3);
-                            }
-                        });
-                    }
+                    buttonDoWorkout.setOnClickListener(v -> {
+                        Intent intent = new Intent(MainActivity.this, DoWorkoutActivity.class);
+                        intent.putExtra(DoWorkoutActivity.EXTRA_PLAN_ID, Integer.valueOf(workout.getIdOfPlan()));
+                        intent.putExtra(DoWorkoutActivity.EXTRA_WORKOUT_ID, Integer.valueOf(workout.getId()));
+                        startActivityForResult(intent, DO_WORKOUT_REQUEST);
+                    });
                 }
             });
         } catch (ExecutionException e) {
@@ -204,11 +201,8 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
             mainViewModel.setPickExercises(planExercises);
             mainViewModel.makePickExercises();
 
-            System.out.println("SIZE new exercises: " + mainViewModel.getListPickExercises().size());
             for (Integer i : mainViewModel.getListPickExercises()) {
-                System.out.println("ADDING new exercises: " + i);
                 ExerciseToPlan e2p = new ExerciseToPlan((int) id, i);
-                System.out.println(e2p.getPlanId() + " - " + e2p.getExerciseId());
                 exerciseToPlanViewModel.insert(e2p);
             }
 
@@ -226,43 +220,34 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
                 return;
             }
             plan.setId(id);
-            planViewModel.update(plan);
 
+            planViewModel.update(plan);
             mainViewModel.setPickExercises(planExercises);
             mainViewModel.makePickExercises();
-
-            exerciseToPlanViewModel.deleteExercisesOfPlan(Integer.valueOf(plan.getId()));
+            exerciseToPlanViewModel.deleteExercisesOfPlan(plan.getId());
 
             for (Integer i : mainViewModel.getListPickExercises()) {
-                ExerciseToPlan e2p = new ExerciseToPlan(Integer.valueOf(plan.getId()), i);
+                ExerciseToPlan e2p = new ExerciseToPlan(plan.getId(), i);
                 exerciseToPlanViewModel.insert(e2p);
             }
 
             Toast.makeText(this, "Plan updated", Toast.LENGTH_SHORT).show();
         } else if (requestCode == DO_WORKOUT_REQUEST && resultCode == RESULT_OK) {
-            int id = data.getIntExtra("idOfWorkout", -1);
-            int idOfPlan = data.getIntExtra("idOfPlan", -1);
+            assert data != null;
+            int id = data.getIntExtra(DoWorkoutActivity.EXTRA_WORKOUT_ID, -1);
+            int idOfPlan = data.getIntExtra(DoWorkoutActivity.EXTRA_PLAN_ID, -1);
 
             if (id == -1) {
                 Toast.makeText(this, "Workout can't be updated", Toast.LENGTH_SHORT).show();
                 return;
             }
-            String timer[] = calendar.getTime().toString().split(" ");
-            timer[3] = "00:00:00";
-            String date = Arrays.toString(timer);
-            date = date.replace(",", "");
-            date = date.substring(1, date.lastIndexOf("]"));
-            System.out.println(date);
-            final String fDate = date;
-
-            Workout workout = new Workout(idOfPlan, fDate, 1);
+            String date = mainViewModel.getTodayDate();
+            Workout workout = new Workout(idOfPlan, date, 1);
             workout.setId(id);
             workoutViewModel.update(workout);
             finish();
             startActivity(getIntent());
             Toast.makeText(this, "Workout done", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Problem with saving", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -276,116 +261,17 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.delete_all_notes:
-                planViewModel.deleteAllPlans();
-                Toast.makeText(this, "All plans deleted", Toast.LENGTH_SHORT).show();
+            case R.id.delete_all_workouts:
+                workoutViewModel.deleteAllWorkouts();
+                doWorkoutViewModel.deleteAllWorkouts();
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
+                Toast.makeText(this, "All workouts deleted", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-
-    private void openOneDayPicker() {
-        Calendar min = Calendar.getInstance();
-        min.add(Calendar.MONTH, -5);
-
-        Calendar max = Calendar.getInstance();
-        max.add(Calendar.DAY_OF_MONTH, 3);
-
-        DatePickerBuilder oneDayBuilder = new DatePickerBuilder(this, this)
-                .setPickerType(com.applandeo.materialcalendarview.CalendarView.ONE_DAY_PICKER)
-                .setDate(max)
-                .setHeaderColor(R.color.colorPrimaryDark)
-                .setHeaderLabelColor(R.color.currentMonthDayColor)
-                .setSelectionColor(R.color.daysLabelColor)
-                .setTodayLabelColor(R.color.colorAccent)
-                .setDialogButtonsColor(android.R.color.holo_green_dark)
-                .setDisabledDaysLabelsColor(android.R.color.holo_purple)
-                .setPreviousButtonSrc(R.drawable.ic_chevron_left_black_24dp)
-                .setForwardButtonSrc(R.drawable.ic_chevron_right_black_24dp)
-                .setMinimumDate(min)
-                .setMaximumDate(max)
-                .setTodayColor(R.color.sampleLighter)
-                .setHeaderVisibility(View.VISIBLE)
-                .setDisabledDays(getDisabledDays());
-
-        DatePicker oneDayPicker = oneDayBuilder.build();
-        oneDayPicker.show();
-    }
-
-    private void openManyDaysPicker() {
-        Calendar min = Calendar.getInstance();
-        min.add(Calendar.DAY_OF_MONTH, -5);
-
-        Calendar max = Calendar.getInstance();
-        max.add(Calendar.DAY_OF_MONTH, 3);
-
-        List<Calendar> selectedDays = new ArrayList<>(getDisabledDays());
-        selectedDays.add(min);
-        selectedDays.add(max);
-
-        DatePickerBuilder manyDaysBuilder = new DatePickerBuilder(this, this)
-                .setPickerType(com.applandeo.materialcalendarview.CalendarView.MANY_DAYS_PICKER)
-                .setHeaderColor(android.R.color.holo_green_dark)
-                .setSelectionColor(android.R.color.holo_green_dark)
-                .setTodayLabelColor(android.R.color.holo_green_dark)
-                .setDialogButtonsColor(android.R.color.holo_green_dark)
-                .setSelectedDays(selectedDays)
-                .setNavigationVisibility(View.GONE)
-                .setDisabledDays(getDisabledDays());
-
-        DatePicker manyDaysPicker = manyDaysBuilder.build();
-        manyDaysPicker.show();
-    }
-
-    private void openRangePicker() {
-        Calendar min = Calendar.getInstance();
-        min.add(Calendar.DAY_OF_MONTH, -5);
-
-        Calendar max = Calendar.getInstance();
-        max.add(Calendar.DAY_OF_MONTH, 3);
-
-        List<Calendar> selectedDays = new ArrayList<>();
-        selectedDays.add(min);
-        selectedDays.addAll(CalendarUtils.getDatesRange(min, max));
-        selectedDays.add(max);
-
-        DatePickerBuilder rangeBuilder = new DatePickerBuilder(this, this)
-                .setPickerType(CalendarView.RANGE_PICKER)
-                .setHeaderColor(R.color.sampleDark)
-                .setAbbreviationsBarColor(R.color.sampleLight)
-                .setAbbreviationsLabelsColor(android.R.color.white)
-                .setPagesColor(R.color.sampleLighter)
-                .setSelectionColor(android.R.color.white)
-                .setSelectionLabelColor(R.color.sampleDark)
-                .setTodayLabelColor(R.color.dialogAccent)
-                .setDialogButtonsColor(android.R.color.white)
-                .setDaysLabelsColor(android.R.color.white)
-                .setAnotherMonthsDaysLabelsColor(R.color.sampleLighter)
-                .setSelectedDays(selectedDays)
-                .setMaximumDaysRange(10)
-                .setDisabledDays(getDisabledDays());
-
-        DatePicker rangePicker = rangeBuilder.build();
-        rangePicker.show();
-    }
-
-    private List<Calendar> getDisabledDays() {
-        Calendar firstDisabled = DateUtils.getCalendar();
-        firstDisabled.add(Calendar.DAY_OF_MONTH, 2);
-
-        Calendar secondDisabled = DateUtils.getCalendar();
-        secondDisabled.add(Calendar.DAY_OF_MONTH, 1);
-
-        Calendar thirdDisabled = DateUtils.getCalendar();
-        thirdDisabled.add(Calendar.DAY_OF_MONTH, 18);
-
-        List<Calendar> calendars = new ArrayList<>();
-        calendars.add(firstDisabled);
-        calendars.add(secondDisabled);
-        calendars.add(thirdDisabled);
-        return calendars;
     }
 
     @Override
@@ -397,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements OnSelectDateListe
     }
 
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) { }
+    public void onPointerCaptureChanged(boolean hasCapture) {
+    }
 
 }

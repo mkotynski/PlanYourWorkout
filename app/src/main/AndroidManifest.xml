@@ -9,15 +9,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DoWorkoutActivity"></activity>
-        <activity android:name=".AddWorkout" />
-        <activity android:name=".AddExerciseToPlan" />
-        <activity android:name=".ExerciseActivity" />
-        <activity android:name=".AddEditPlanActivity" />
-        <activity android:name=".AddEditExerciseActivity" />
-        <activity android:name=".DoEditWorkoutExercise" />
+        <activity android:name=".View.WorkoutHistoryActivity"></activity>
+        <activity android:name=".View.DoWorkoutActivity" />
+        <activity android:name=".View.AddWorkout" />
+        <activity android:name=".View.AddExerciseToPlan" />
+        <activity android:name=".View.ExerciseActivity" />
+        <activity android:name=".View.AddEditPlanActivity" />
+        <activity android:name=".View.AddEditExerciseActivity" />
+        <activity android:name=".View.DoEditWorkoutExercise" />
         <activity
-            android:name=".CalendarActivity"
+            android:name=".View.CalendarActivity"
             android:label="@string/app_name" />
         <activity android:name=".MainActivity">
             <intent-filter>

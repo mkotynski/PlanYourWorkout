@@ -6,13 +6,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".AddEditPlanActivity">
+    tools:context=".View.AddEditPlanActivity">
 
     <EditText
         android:id="@+id/et_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Workout plan's name"
+        android:hint="Plan name"
         android:inputType="text"
         />
     <EditText
