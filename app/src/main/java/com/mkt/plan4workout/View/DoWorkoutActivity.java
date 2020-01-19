@@ -200,6 +200,7 @@ public class DoWorkoutActivity extends AppCompatActivity {
 
             for (int p = 0; p < countOfSeries; p++) {
                 WorkoutSerie workoutSerie = new WorkoutSerie(doWorkoutId, exerciseId, Integer.valueOf(reps[p]), Integer.valueOf(kg[p]));
+                System.out.println("id: " + Integer.valueOf(ids[p]));
                 workoutSerie.setId(Integer.valueOf(ids[p]));
                 seriesViewModel.update(workoutSerie);
             }

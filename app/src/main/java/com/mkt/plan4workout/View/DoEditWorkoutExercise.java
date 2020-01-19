@@ -32,10 +32,11 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
     public static final String EXTRA_KG = "com.mkt.plan4workout.EXTRA_KG";
     public static final String EXTRA_EXERCISE_ID = "com.mkt.plan4workout.EXTRA_EXERCISE_ID";
     public static final String EXTRA_WORKOUT_ID = "com.mkt.plan4workout.EXTRA_WORKOUT_ID";
-    public static final String EXTRA_IDS = "com.mkt.plan4workout.EXTRA_WORKOUT_ID";
+    public static final String EXTRA_IDS = "com.mkt.plan4workout.EXTRA_IDS";
 
     TextView tvExerciseName;
     LinearLayout linearLayout;
+    LinearLayout lSeriesNumber;
     LinearLayout.LayoutParams paramsInner;
     ScrollView.LayoutParams params;
     Button btnMinus;
@@ -60,6 +61,7 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
         btnMinus = findViewById(R.id.btn_minus);
         btnPlus = findViewById(R.id.btn_plus);
         tvSeries = findViewById(R.id.tv_series_count);
+        lSeriesNumber = findViewById(R.id.series_number);
         doViewModel = ViewModelProviders.of(this).get(DoViewModel.class);
 
         tvSeries.setText("" + numberChoosenSeries);
@@ -67,18 +69,18 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
         getExtras();
 
         tvExerciseName.setText(doViewModel.getExerciseName());
-        setSeriesPicker(1,false);
+        setSeriesPicker(1, false);
 
         if (doViewModel.getKgs() == null) {
             btnMinus.setOnClickListener(v -> {
-                if(numberChoosenSeries>0) numberChoosenSeries--;
+                if (numberChoosenSeries > 0) numberChoosenSeries--;
                 tvSeries.setText("" + numberChoosenSeries);
-                setSeriesPicker(numberChoosenSeries,false);
+                setSeriesPicker(numberChoosenSeries, false);
             });
             btnPlus.setOnClickListener(v -> {
-                if(numberChoosenSeries<9) numberChoosenSeries++;
+                if (numberChoosenSeries < 9) numberChoosenSeries++;
                 tvSeries.setText("" + numberChoosenSeries);
-                setSeriesPicker(numberChoosenSeries,false);
+                setSeriesPicker(numberChoosenSeries, false);
             });
         } else {
             tvSeries.setVisibility(View.GONE);
@@ -97,6 +99,15 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
         data.putExtra(EXTRA_NAME, title);
         data.putExtra(EXTRA_SERIES, numberChoosenSeries);
 
+        String[] ids = new String[doViewModel.getIds().size()];
+        int o = 0;
+        for (String s : doViewModel.getIds()) {
+            ids[o] = s;
+            System.out.println("O: " + ids[o]);
+            o++;
+        }
+        data.putExtra(EXTRA_IDS, ids);
+
         boolean isValid = true;
 
         if (isEditingData) countOfSeries = doViewModel.getKgs().size();
@@ -112,9 +123,6 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
         }
 
         if (isValid) {
-
-            if (doViewModel.getIds() != null)
-                data.putExtra(EXTRA_IDS, doViewModel.getIds().toArray(new String[0]));
 
             data.putExtra(EXTRA_REPS, reps);
             data.putExtra(EXTRA_KG, kg);
@@ -171,6 +179,7 @@ public class DoEditWorkoutExercise extends AppCompatActivity {
                 linearLayout.addView(serie.get(j - 1));
             }
         } else {
+            lSeriesNumber.setVisibility(View.GONE);
             series.removeAll(series);
             serie.removeAll(serie);
             linearLayout.removeAllViews();
