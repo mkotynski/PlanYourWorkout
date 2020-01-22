@@ -99,7 +99,7 @@ public class AddExerciseToPlan extends AppCompatActivity {
         Intent data = new Intent();
         //data.putExtra(EXTRA_EXERCISES, ExercisePickViewModel.listToString());
         data.putExtra(EXTRA_EXERCISES_ID, exercisePickViewModel.idListToString());
-        setResult(RESULT_OK, data);
+        setResult(1, data);
         finish();
     }
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".View.ExerciseActivity"
-    android:background="@color/colorNotExactlyWhite">
+    android:background="@color/colorPrimaryDark">
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

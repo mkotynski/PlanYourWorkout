@@ -1,70 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@color/colorNotExactlyWhite">
+    android:background="@color/colorPrimaryDark"
+>
 
-    <RelativeLayout
-        android:id="@+id/linear_layout_tags"
+    <com.mkt.plan4workout.View.MyViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_weight="1"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1.0"
+        android:background="@color/colorPrimaryDark">
         <Button
-            android:id="@+id/button_exercise"
-            android:layout_width="match_parent"
-            android:layout_marginTop="8dp"
-            android:layout_height="60dp"
+            android:id="@+id/btn_exercises"
+            android:layout_weight=".334"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="20dp"
             android:textColor="@color/colorWhite"
             android:text="Exercises" />
-        <Button
-            android:id="@+id/button_calendar"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_below="@+id/button_exercise"
-            android:textColor="@color/colorWhite"
-            android:layout_marginTop="3dp"
-            android:text="Calendar" />
-        <Button
-            android:id="@+id/button_do_workout"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_below="@+id/button_calendar"
-            android:text="Do Today's Workout"
-            android:textColor="@color/colorWhite"
-            android:layout_marginTop="3dp"
-            android:visibility="gone"/>
 
-        <TextView
-            android:id="@+id/tv_label_plan"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btn_calendar"
+            android:layout_weight=".334"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:padding="9dp"
-            android:textAlignment="center"
-            android:layout_below="@+id/button_do_workout"
-            android:text="YOUR WORKOUT PLANS"
-            android:background="@color/colorPrimary"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:layout_gravity="center"
+            android:padding="20dp"
             android:textColor="@color/colorWhite"
-            android:layout_marginTop="20dp"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
-            android:layout_below="@+id/tv_label_plan"
-            android:id="@+id/recycler_view"
-            tools:listitem="@layout/plan_item" />
-    </RelativeLayout>
+            android:text="Calendar" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button_add_plan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="32dp"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="@color/colorPrimary" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <Button
+            android:id="@+id/btn_plans"
+            android:layout_weight=".334"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:textColor="@color/colorWhite"
+            android:text="Plans" />
+    </LinearLayout>
+
+</LinearLayout>

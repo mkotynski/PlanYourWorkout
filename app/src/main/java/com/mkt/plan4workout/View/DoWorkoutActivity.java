@@ -172,7 +172,7 @@ public class DoWorkoutActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        if (requestCode == 1 && resultCode == 1) {
             int exerciseId = data.getIntExtra(DoEditWorkoutExercise.EXTRA_EXERCISE_ID, -1);
             int doWorkoutId = data.getIntExtra(DoEditWorkoutExercise.EXTRA_WORKOUT_ID, -1);
             int countOfSeries = data.getIntExtra(DoEditWorkoutExercise.EXTRA_SERIES, -1);
@@ -190,7 +190,7 @@ public class DoWorkoutActivity extends AppCompatActivity {
             }
 
             Toast.makeText(this, "Results saved", Toast.LENGTH_SHORT).show();
-        } else if (requestCode == 2 && resultCode == RESULT_OK) {
+        } else if (requestCode == 2 && resultCode == 1) {
             int exerciseId = data.getIntExtra(DoEditWorkoutExercise.EXTRA_EXERCISE_ID, -1);
             int doWorkoutId = data.getIntExtra(DoEditWorkoutExercise.EXTRA_WORKOUT_ID, -1);
             int countOfSeries = data.getIntExtra(DoEditWorkoutExercise.EXTRA_SERIES, -1);
@@ -200,7 +200,6 @@ public class DoWorkoutActivity extends AppCompatActivity {
 
             for (int p = 0; p < countOfSeries; p++) {
                 WorkoutSerie workoutSerie = new WorkoutSerie(doWorkoutId, exerciseId, Integer.valueOf(reps[p]), Integer.valueOf(kg[p]));
-                System.out.println("id: " + Integer.valueOf(ids[p]));
                 workoutSerie.setId(Integer.valueOf(ids[p]));
                 seriesViewModel.update(workoutSerie);
             }
@@ -217,7 +216,7 @@ public class DoWorkoutActivity extends AppCompatActivity {
         data.putExtra(EXTRA_PLAN_ID, idOfPlan);
 
 
-        setResult(RESULT_OK, data);
+        setResult(1, data);
         finish();
     }
 

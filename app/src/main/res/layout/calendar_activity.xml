@@ -5,8 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity"
-    android:background="@color/colorNotExactlyWhite">
+    tools:context=".View.CalendarActivity"
+    android:background="@color/colorPrimaryDark">
+
+    <Button
+        android:id="@+id/button_do_workout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Do Today's Workout"
+        android:textColor="@color/colorWhite"
+        android:shadowRadius="@android:integer/config_longAnimTime"
+        android:background="#8D16AD"
+        android:layout_marginTop="3dp"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tv_label_plan"
         android:layout_width="match_parent"
@@ -16,14 +28,12 @@
         android:layout_below="@+id/button_do_workout"
         android:text="CALENDAR"
         android:background="@color/colorPrimary"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@color/colorWhite"
-        android:layout_marginTop="10dp"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="@color/colorWhite" />
 
     <com.applandeo.materialcalendarview.CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
         android:layout_height="0dp"
         android:layout_weight="1"
         app:type="one_day_picker"
@@ -35,11 +45,16 @@
         app:todayLabelColor="#CA0000"
         />
 
-
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="1.0">
     <Button
         android:id="@+id/show_results"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight=".5"
+        android:layout_width="0dip"
         android:layout_gravity="center"
         android:padding="20dp"
         android:textColor="@color/colorWhite"
@@ -47,11 +62,12 @@
 
     <Button
         android:id="@+id/setDateButton"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_weight=".5"
+        android:layout_width="0dip"
         android:padding="20dp"
         android:textColor="@color/colorWhite"
         android:text="Set/remove workout" />
+</LinearLayout>
 
 </LinearLayout>

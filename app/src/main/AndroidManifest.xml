@@ -17,8 +17,10 @@
         <activity android:name=".View.AddEditPlanActivity" />
         <activity android:name=".View.AddEditExerciseActivity" />
         <activity android:name=".View.DoEditWorkoutExercise" />
+        <activity android:name=".View.PlansActivity" />
+        <activity android:name=".View.CalendarActivity" />
         <activity
-            android:name=".View.CalendarActivity"
+            android:name=".View.Old.CalendarActivity"
             android:label="@string/app_name" />
         <activity android:name=".MainActivity">
             <intent-filter>

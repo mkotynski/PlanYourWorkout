@@ -17,11 +17,14 @@ public class Exercise {
 
     private String description;
 
-    public Exercise(String name, String category, String type, String description) {
+    private int archive;
+
+    public Exercise(String name, String category, String type, String description, int archive) {
         this.name = name;
         this.category = category;
         this.type = type;
         this.description = description;
+        this.archive = archive;
     }
 
     public void setId(int id) {
@@ -46,5 +49,9 @@ public class Exercise {
 
     public String getDescription() {
         return description;
+    }
+
+    public int getArchive() {
+        return archive;
     }
 }

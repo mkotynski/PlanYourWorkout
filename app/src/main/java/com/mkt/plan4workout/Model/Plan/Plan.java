@@ -14,10 +14,13 @@ public class Plan {
 
     private String description;
 
-    public Plan(String name, String category, String description) {
+    private int archive;
+
+    public Plan(String name, String category, String description, int archive) {
         this.name = name;
         this.category = category;
         this.description = description;
+        this.archive = archive;
     }
 
     public void setId(int id) {
@@ -38,5 +41,9 @@ public class Plan {
 
     public String getDescription(){
         return description;
+    }
+
+    public int getArchive() {
+        return archive;
     }
 }

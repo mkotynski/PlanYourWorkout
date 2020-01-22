@@ -22,7 +22,7 @@ import com.mkt.plan4workout.Model.Workout.WorkoutDao;
 import com.mkt.plan4workout.Model.WorkoutSerie.WorkoutSerie;
 import com.mkt.plan4workout.Model.WorkoutSerie.WorkoutSerieDao;
 
-@Database(entities = {Plan.class, Exercise.class, ExerciseToPlan.class, Workout.class, DoWorkout.class, WorkoutSerie.class}, version = 9, exportSchema = false)
+@Database(entities = {Plan.class, Exercise.class, ExerciseToPlan.class, Workout.class, DoWorkout.class, WorkoutSerie.class}, version = 11, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;
@@ -73,17 +73,17 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         protected Void doInBackground(Void... voids) {
             planDao.deleteAllPlans();
-            planDao.insert(new Plan("FBW", "fbw","Description"));
-            planDao.insert(new Plan("MONDAY PUSH", "push","Description"));
-            planDao.insert(new Plan("FBW part 2", "fbw","Description 2"));
+            planDao.insert(new Plan("FBW", "fbw","Description",0));
+            planDao.insert(new Plan("MONDAY PUSH", "push","Description",0));
+            planDao.insert(new Plan("FBW part 2", "fbw","Description 2",0));
 
-            exerciseDao.insert(new Exercise("Crunch","core","push",  ".."));
-            exerciseDao.insert(new Exercise("Bicep Curl","arms","pull", "With barbell"));
-            exerciseDao.insert(new Exercise("Chin Up","back","pull", ".."));
-            exerciseDao.insert(new Exercise("Bench Press","chest","push", "Wide Grip"));
-            exerciseDao.insert(new Exercise("Deadlift","legs","pull", "With barbell"));
-            exerciseDao.insert(new Exercise("Arnold Press","shoulders","push", "Dumbbell"));
-            exerciseDao.insert(new Exercise("Stretching","other","other", ".."));
+            exerciseDao.insert(new Exercise("Crunch","core","push",  "..",0));
+            exerciseDao.insert(new Exercise("Bicep Curl","arms","pull", "With barbell",0));
+            exerciseDao.insert(new Exercise("Chin Up","back","pull", "..",0));
+            exerciseDao.insert(new Exercise("Bench Press","chest","push", "Wide Grip",0));
+            exerciseDao.insert(new Exercise("Deadlift","legs","pull", "With barbell",0));
+            exerciseDao.insert(new Exercise("Arnold Press","shoulders","push", "Dumbbell",0));
+            exerciseDao.insert(new Exercise("Stretching","other","other", "..",0));
             return null;
         }
     }

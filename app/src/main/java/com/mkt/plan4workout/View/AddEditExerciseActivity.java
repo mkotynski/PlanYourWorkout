@@ -70,7 +70,7 @@ public class AddEditExerciseActivity extends AppCompatActivity {
         if (id != -1) {
             data.putExtra(EXTRA_ID, id);
         }
-        setResult(RESULT_OK, data);
+        setResult(1, data);
         finish();
     }
 

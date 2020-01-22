@@ -15,11 +15,13 @@ import java.util.concurrent.ExecutionException;
 public class PlanViewModel extends AndroidViewModel {
     private PlanRepository repository;
     private LiveData<List<Plan>> allPlans;
+    private LiveData<List<Plan>> allPlansA;
 
     public PlanViewModel(@NonNull Application application) {
         super(application);
         repository = new PlanRepository(application);
         allPlans = repository.getAllPlans();
+        allPlansA = repository.getAllPlansA();
     }
 
     public Long insert(Plan plan) throws ExecutionException, InterruptedException {
@@ -32,6 +34,10 @@ public class PlanViewModel extends AndroidViewModel {
 
     public void delete(Plan plan) {
         repository.delete(plan);
+    }
+
+    public void archive(int id) {
+        repository.archive(id);
     }
 
     public void deleteAllPlans() {
@@ -47,5 +53,9 @@ public class PlanViewModel extends AndroidViewModel {
 
     public LiveData<List<Plan>> getAllPlans() {
         return allPlans;
+    }
+
+    public LiveData<List<Plan>> getAllPlansA() {
+        return allPlansA;
     }
 }

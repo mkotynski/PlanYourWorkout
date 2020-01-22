@@ -3,6 +3,7 @@ package com.mkt.plan4workout.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -11,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,7 +29,9 @@ import com.mkt.plan4workout.ViewModel.ExerciseToPlanViewModel;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class ExerciseActivity extends AppCompatActivity {
+import static android.app.Activity.RESULT_OK;
+
+public class ExerciseActivity extends Fragment {
 
     public static final int ADD_EXERCISE_REQUEST = 1;
     public static final int EDIT_EXERCISE_REQUEST = 2;
@@ -35,23 +40,28 @@ public class ExerciseActivity extends AppCompatActivity {
     DoWorkoutViewModel doWorkoutViewModel;
     ExerciseToPlanViewModel exerciseToPlanViewModel;
 
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_exercise, container, false);
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exercise);
-        FloatingActionButton buttonAddExercise = findViewById(R.id.button_add_exercise);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        View view = getView();
+        FloatingActionButton buttonAddExercise = view.findViewById(R.id.button_add_exercise);
         buttonAddExercise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ExerciseActivity.this, AddEditExerciseActivity.class);
+                Intent intent = new Intent(getActivity().getApplication(), AddEditExerciseActivity.class);
                 startActivityForResult(intent, ADD_EXERCISE_REQUEST);
             }
         });
         exerciseViewModel = ViewModelProviders.of(this).get(ExerciseViewModel.class);
         doWorkoutViewModel = ViewModelProviders.of(this).get(DoWorkoutViewModel.class);
         exerciseToPlanViewModel = ViewModelProviders.of(this).get(ExerciseToPlanViewModel.class);
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity().getApplication()));
         recyclerView.setHasFixedSize(true);
 
         final ExerciseAdapter adapter = new ExerciseAdapter();
@@ -64,7 +74,7 @@ public class ExerciseActivity extends AppCompatActivity {
             }
         });
 
-        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(this) {
+        SwipeToDeleteCallback swipeToDeleteCallback = new SwipeToDeleteCallback(getActivity().getApplication()) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false; // drag and drop functionality
@@ -77,26 +87,27 @@ public class ExerciseActivity extends AppCompatActivity {
                 boolean workoutsHere = false;
                 try {
                     System.out.println(item.getName() + " " + item.getId());
-                    if(doWorkoutViewModel.getDoWorkoutsByExercise(item.getId()).size() > 0) workoutsHere = true;
+                    if (doWorkoutViewModel.getDoWorkoutsByExercise(item.getId()).size() > 0)
+                        workoutsHere = true;
                     System.out.println(doWorkoutViewModel.getDoWorkoutsByExercise(item.getId()).size());
-                    for(DoWorkout ex : doWorkoutViewModel.getDoWorkoutsByExercise(item.getId())){
-                        System.out.println(ex.getExerciseId() +" " + ex.getWorkoutId());
+                    for (DoWorkout ex : doWorkoutViewModel.getDoWorkoutsByExercise(item.getId())) {
+                        System.out.println(ex.getExerciseId() + " " + ex.getWorkoutId());
                     }
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if(!workoutsHere) {
+                if (!workoutsHere) {
                     exerciseToPlanViewModel.deleteExercisesById(item.getId());
                     exerciseViewModel.delete(adapter.getExerciseAt(position));
                     adapter.removeItem(position);
-                    Toast.makeText(ExerciseActivity.this, "Exercise deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplication(), "Exercise deleted", Toast.LENGTH_SHORT).show();
 
                 } else {
-                    adapter.restoreItemNo(item,position);
+                    adapter.restoreItemNo(item, position);
                     clearView(recyclerView, viewHolder);
-                    Toast.makeText(ExerciseActivity.this, "There are workouts in Calendar connected with this exercise", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplication(), "There are workouts in Calendar connected with this exercise", Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -107,7 +118,7 @@ public class ExerciseActivity extends AppCompatActivity {
         adapter.setOnItemClickListener(new ExerciseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Exercise exercise) {
-                Intent intent = new Intent(ExerciseActivity.this, AddEditExerciseActivity.class);
+                Intent intent = new Intent(getActivity().getApplication(), AddEditExerciseActivity.class);
                 intent.putExtra(AddEditExerciseActivity.EXTRA_ID, exercise.getId());
                 intent.putExtra(AddEditExerciseActivity.EXTRA_EXERCISE_NAME, exercise.getName());
                 intent.putExtra(AddEditExerciseActivity.EXTRA_EXERCISE_CATEGORY, exercise.getCategory());
@@ -127,19 +138,19 @@ public class ExerciseActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ADD_EXERCISE_REQUEST && resultCode == RESULT_OK) {
+        if (requestCode == ADD_EXERCISE_REQUEST && resultCode == 1) {
             String exerciseName = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_NAME);
             String exerciseCategory = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_CATEGORY);
             String exerciseType = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_TYPE);
             String exerciseDescription = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_DESCRIPTION);
-            Exercise exercise = new Exercise(exerciseName, exerciseCategory, exerciseType, exerciseDescription);
+            Exercise exercise = new Exercise(exerciseName, exerciseCategory, exerciseType, exerciseDescription, 0);
             exerciseViewModel.insert(exercise);
 
-            Toast.makeText(this, "Exercise saved", Toast.LENGTH_SHORT).show();
-        } else if (requestCode == EDIT_EXERCISE_REQUEST && resultCode == RESULT_OK) {
+            Toast.makeText(getActivity().getApplication(), "Exercise saved", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == EDIT_EXERCISE_REQUEST && resultCode == 1) {
             String exerciseName = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_NAME);
             String exerciseCategory = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_CATEGORY);
             String exerciseType = data.getStringExtra(AddEditExerciseActivity.EXTRA_EXERCISE_TYPE);
@@ -147,16 +158,16 @@ public class ExerciseActivity extends AppCompatActivity {
             int id = data.getIntExtra(AddEditExerciseActivity.EXTRA_ID, -1);
 
             if (id == -1) {
-                Toast.makeText(this, "Exercise can't be updated", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplication(), "Exercise can't be updated", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Exercise exercise = new Exercise(exerciseName, exerciseCategory, exerciseType, exerciseDescription);
+            Exercise exercise = new Exercise(exerciseName, exerciseCategory, exerciseType, exerciseDescription, 0);
             exercise.setId(id);
             exerciseViewModel.update(exercise);
 
-            Toast.makeText(this, "Exercise updated", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity().getApplication(), "Exercise updated", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Exercise not saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity().getApplication(), "Exercise not saved", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -14,12 +14,14 @@ import java.util.concurrent.ExecutionException;
 public class PlanRepository {
     private PlanDao planDao;
     private LiveData<List<Plan>> allPlans;
+    private LiveData<List<Plan>> allPlansA;
     private long resultId = 0;
 
     public PlanRepository(Application application){
         AppDatabase database = AppDatabase.getInstance(application);
         planDao = database.planDao();
         allPlans = planDao.getAllPlans();
+        allPlansA = planDao.getAllPlansA();
     }
 
     public Long insert(Plan plan) throws ExecutionException, InterruptedException {
@@ -39,6 +41,10 @@ public class PlanRepository {
         new DeleteAllPlansAsyncTask(planDao).execute();
     }
 
+    public void archive(int id){
+        new ArchivePlanAsyncTask(planDao, id).execute();
+    }
+
     public LiveData<Plan> getPlan(int id) throws ExecutionException, InterruptedException {
         GetPlanAsyncTask asyncTask = new GetPlanAsyncTask(planDao, id);
         return asyncTask.execute().get();
@@ -51,6 +57,10 @@ public class PlanRepository {
 
     public LiveData<List<Plan>> getAllPlans() {
         return allPlans;
+    }
+
+    public LiveData<List<Plan>> getAllPlansA() {
+        return allPlansA;
     }
 
     private static class InsertPlanAsyncTask extends AsyncTask<Plan, Void, Long> {
@@ -97,6 +107,22 @@ public class PlanRepository {
         @Override
         protected Void doInBackground(Plan... plans) {
             planDao.delete(plans[0]);
+            return null;
+        }
+    }
+
+    private static class ArchivePlanAsyncTask extends AsyncTask<Void, Void, Void> {
+        private PlanDao planDao;
+        private int id;
+
+        private ArchivePlanAsyncTask(PlanDao planDao, int id) {
+            this.planDao = planDao;
+            this.id = id;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            planDao.archive(id);
             return null;
         }
     }

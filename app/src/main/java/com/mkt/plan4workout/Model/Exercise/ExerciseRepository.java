@@ -14,11 +14,13 @@ import java.util.concurrent.ExecutionException;
 public class ExerciseRepository {
     private ExerciseDao exerciseDao;
     private LiveData<List<Exercise>> allExercises;
+    private LiveData<List<Exercise>> allExercisesA;
 
 
     public ExerciseRepository(Application application) {
         AppDatabase database = AppDatabase.getInstance(application);
         exerciseDao = database.exerciseDao();
+        allExercisesA = exerciseDao.getAllExercisesA();
         allExercises = exerciseDao.getAllExercises();
     }
 
@@ -42,10 +44,19 @@ public class ExerciseRepository {
         return allExercises;
     }
 
+    public LiveData<List<Exercise>> getAllExercisesA() {
+        return allExercisesA;
+    }
+
     public List<Exercise> getPlanExercises(int id) throws ExecutionException, InterruptedException {
         GetPlanExercisesAsyncTask asyncTask = new GetPlanExercisesAsyncTask(exerciseDao, id);
         return asyncTask.execute().get();
     }
+
+    public void archive(int id) {
+        new ArchiveExercisesAsyncTask(exerciseDao, id).execute();
+    }
+
 
     private static class InsertExerciseAsyncTask extends AsyncTask<Exercise, Void, Void> {
         private ExerciseDao exerciseDao;
@@ -115,6 +126,22 @@ public class ExerciseRepository {
         @Override
         protected List<Exercise> doInBackground(Void... voids) {
             return exerciseDao.getPlanExercises(id);
+        }
+    }
+
+    private static class ArchiveExercisesAsyncTask extends AsyncTask<Void, Void, Void> {
+        private ExerciseDao exerciseDao;
+        private int id;
+
+        private ArchiveExercisesAsyncTask(ExerciseDao exerciseDao, int id) {
+            this.exerciseDao = exerciseDao;
+            this.id = id;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            exerciseDao.archive(id);
+            return null;
         }
     }
 }

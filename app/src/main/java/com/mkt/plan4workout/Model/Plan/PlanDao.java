@@ -22,11 +22,17 @@ public interface PlanDao {
     @Delete
     void delete(Plan plan);
 
+    @Query("UPDATE plan_table SET archive = 1 WHERE id = :id")
+    void archive(int id);
+
     @Query("DELETE FROM plan_table")
     void deleteAllPlans();
 
     @Query("SELECT * FROM plan_table ORDER BY id DESC")
     LiveData<List<Plan>> getAllPlans();
+
+    @Query("SELECT * FROM plan_table WHERE archive = 0 ORDER BY id DESC")
+    LiveData<List<Plan>> getAllPlansA();
 
     @Query("SELECT * FROM plan_table WHERE id = :idOfPlan")
     LiveData<Plan> getPlan(int idOfPlan);

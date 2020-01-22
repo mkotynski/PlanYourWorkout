@@ -80,7 +80,7 @@ public class AddEditPlanActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ADD_EXERCISES_REQUEST && resultCode == RESULT_OK) {
+        if (requestCode == ADD_EXERCISES_REQUEST && resultCode == 1) {
             String exercisesId = data.getStringExtra(AddExerciseToPlan.EXTRA_EXERCISES_ID);
             if (!exercisesId.isEmpty()) {
                 textViewChoosenExercises.setText(exercisesId);
@@ -113,7 +113,7 @@ public class AddEditPlanActivity extends AppCompatActivity {
         if (id != -1) {
             data.putExtra(EXTRA_ID, id);
         }
-        setResult(RESULT_OK, data);
+        setResult(1, data);
         finish();
     }
 

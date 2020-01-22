@@ -16,6 +16,7 @@ import com.mkt.plan4workout.Model.Exercise.Exercise;
 import com.mkt.plan4workout.R;
 import com.mkt.plan4workout.Model.WorkoutSerie.WorkoutSerie;
 import com.mkt.plan4workout.Utils.RepsAndKgTextView;
+import com.mkt.plan4workout.View.DoEditWorkoutExercise;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,11 +72,23 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                     400,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
+            TextView tvr = new TextView(context);
+            LinearLayout.LayoutParams xparams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+            xparams.setMargins(0, 20, 0, 0);
+            tvr.setTextSize(17);
+            tvr.setLayoutParams(xparams);
+            tvr.setText("SERIES DETAILS");
+
+
             holder.series.setLayoutParams(params);
             holder.series.setVisibility(VISIBLE);
             series.removeAll(series);
             serie.removeAll(serie);
             holder.series.removeAllViews();
+            holder.series.addView(tvr);
             for (int j = 1; j <= exWorkoutSeries.size(); j++) {
                 serie.add(new LinearLayout(context));
                 series.add(new RepsAndKgTextView(new TextView(context), new TextView(context)));

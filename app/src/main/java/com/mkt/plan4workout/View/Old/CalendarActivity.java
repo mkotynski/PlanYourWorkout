@@ -1,18 +1,12 @@
-package com.mkt.plan4workout.View;
+package com.mkt.plan4workout.View.Old;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.applandeo.materialcalendarview.CalendarView;
@@ -25,16 +19,12 @@ import com.applandeo.materialcalendarview.utils.DateUtils;
 import com.mkt.plan4workout.Model.DoWorkout.DoWorkout;
 import com.mkt.plan4workout.R;
 import com.mkt.plan4workout.View.AddWorkout;
-import com.mkt.plan4workout.View.DoWorkoutActivity;
-import com.mkt.plan4workout.View.ExerciseActivity;
-import com.mkt.plan4workout.View.PlansActivity;
 import com.mkt.plan4workout.View.WorkoutHistoryActivity;
 import com.mkt.plan4workout.ViewModel.CalendarViewModel;
 import com.mkt.plan4workout.ViewModel.DoWorkoutViewModel;
 import com.mkt.plan4workout.Model.Exercise.Exercise;
 import com.mkt.plan4workout.ViewModel.ExerciseViewModel;
 import com.mkt.plan4workout.Model.Plan.Plan;
-import com.mkt.plan4workout.ViewModel.MainActivityViewModel;
 import com.mkt.plan4workout.ViewModel.PlanViewModel;
 import com.mkt.plan4workout.Model.Workout.Workout;
 import com.mkt.plan4workout.ViewModel.WorkoutViewModel;
@@ -45,54 +35,68 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static android.app.Activity.RESULT_OK;
-import static com.mkt.plan4workout.View.PlansActivity.DO_WORKOUT_REQUEST;
 
-
-public class CalendarActivity extends Fragment {
+public class CalendarActivity extends AppCompatActivity {
 
     WorkoutViewModel workoutViewModel;
     CalendarViewModel calendarViewModel;
     PlanViewModel planViewModel;
     DoWorkoutViewModel doWoViewModel;
     ExerciseViewModel exerciseViewModel;
-    MainActivityViewModel mainViewModel;
-
-    Button buttonDoWorkout;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.calendar_activity, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        View view = getView();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.calendar_activity);
         workoutViewModel = ViewModelProviders.of(this).get(WorkoutViewModel.class);
         calendarViewModel = ViewModelProviders.of(this).get(CalendarViewModel.class);
         planViewModel = ViewModelProviders.of(this).get(PlanViewModel.class);
         doWoViewModel = ViewModelProviders.of(this).get(DoWorkoutViewModel.class);
         exerciseViewModel = ViewModelProviders.of(this).get(ExerciseViewModel.class);
-        mainViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
         List<EventDay> events = new ArrayList<>();
 
-        CalendarView calendarView = view.findViewById(R.id.calendarView);
+        CalendarView calendarView = findViewById(R.id.calendarView);
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, -24);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         Calendar min = Calendar.getInstance();
-        min.add(Calendar.MONTH, -3);
+        min.add(Calendar.MONTH, -1);
 
         Calendar max = Calendar.getInstance();
-        max.add(Calendar.MONTH, 3);
+        max.add(Calendar.MONTH, 1);
 
         calendarView.setMinimumDate(min);
         calendarView.setMaximumDate(max);
         calendarView.setEvents(events);
+
+        calendarView.setOnDayClickListener(eventDay -> {
+            workoutViewModel.getAllWorkouts().observe(this, new Observer<List<Workout>>() {
+                @Override
+                public void onChanged(List<Workout> workouts) {
+                    for (Workout workout : workouts) {
+                        if (eventDay.getCalendar().getTime().toString().equals(workout.getDate())) {
+                            System.out.println(eventDay.getCalendar().getTime().toString() + " - " + workout.getDate());
+                            try {
+                                planViewModel.getPlan(workout.getIdOfPlan()).observe(CalendarActivity.this, new Observer<Plan>() {
+                                    @Override
+                                    public void onChanged(Plan plan) {
+                                        Toast.makeText(CalendarActivity.this, plan.getName(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                }
+            });
+        });
+
 
         workoutViewModel.getAllWorkouts().observe(this, new Observer<List<Workout>>() {
             @Override
@@ -108,7 +112,7 @@ public class CalendarActivity extends Fragment {
             }
         });
 
-        Button showResults = (Button) view.findViewById(R.id.show_results);
+        Button showResults = (Button) findViewById(R.id.show_results);
         showResults.setOnClickListener(v -> {
 
             Calendar selectedDate = calendarView.getFirstSelectedDate();
@@ -124,7 +128,7 @@ public class CalendarActivity extends Fragment {
                 Plan plan = null;
                 try {
                     workout = workoutViewModel.getWorkoutByDate(selectedDate.getTime().toString());
-                    Intent intent = new Intent(getActivity().getApplication(), WorkoutHistoryActivity.class);
+                    Intent intent = new Intent(CalendarActivity.this, WorkoutHistoryActivity.class);
                     intent.putExtra(WorkoutHistoryActivity.EXTRA_WORKOUT_ID, workout.getId());
                     intent.putExtra(WorkoutHistoryActivity.EXTRA_PLAN_ID, workout.getIdOfPlan());
                     plan = planViewModel.getxPlan(workout.getIdOfPlan());
@@ -138,75 +142,57 @@ public class CalendarActivity extends Fragment {
             }
         });
 
-        Button setDateButton = (Button) view.findViewById(R.id.setDateButton);
+        Button setDateButton = (Button) findViewById(R.id.setDateButton);
         setDateButton.setOnClickListener(v -> {
 
-            for(EventDay e: events){
-                System.out.println(e.getCalendar().getTime());
-            }
             Calendar selectedDate = calendarView.getFirstSelectedDate();
-            System.out.println(selectedDate.getTime());
-            EventDay eventDay = new EventDay(selectedDate);
+            EventDay eventDay = new EventDay(selectedDate, R.drawable.sample_icon_2);
             boolean exists = false;
             for (EventDay event : events) {
                 if (event.getCalendar().getTime().toString().equals(selectedDate.getTime().toString()))
                     exists = true;
             }
             if (!exists) {
-                Intent intent = new Intent(getActivity().getApplication(), AddWorkout.class);
+                Intent intent = new Intent(CalendarActivity.this, AddWorkout.class);
                 intent.putExtra(AddWorkout.EXTRA_DATE, selectedDate.getTime().toString());
                 startActivityForResult(intent, 1);
             } else {
                 try {
                     Workout workout = workoutViewModel.getWorkoutByDate(selectedDate.getTime().toString());
-                    if (workout != null){
-                        int i = 0;
-                        for (EventDay event : events) {
-                            if (!event.getCalendar().getTime().toString().equals(workout.getDate())) i++;
-                        }
-                        workoutViewModel.delete(workout);
-                    }
-                    getActivity().finish();
-                    startActivity(getActivity().getIntent());
+                    if (workout != null) workoutViewModel.delete(workout);
+                    finish();
+                    startActivity(getIntent());
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Toast.makeText(getActivity().getApplication(), "Deleted workout", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Deleted workout", Toast.LENGTH_LONG).show();
             }
             calendarView.setEvents(events);
+
         });
-
-
-
-        try {
-            String date = mainViewModel.getTodayDate();
-            workoutViewModel.getWorkoutByDateLD(date).observe(this, workout -> {
-                if (workout != null && workout.getDone() == 0) {
-                    buttonDoWorkout = view.findViewById(R.id.button_do_workout);
-                    buttonDoWorkout.setVisibility(View.VISIBLE);
-                    ViewGroup.LayoutParams params = buttonDoWorkout.getLayoutParams();
-                    buttonDoWorkout.setLayoutParams(params);
-
-                    buttonDoWorkout.setOnClickListener(v -> {
-                        Intent intent = new Intent(getActivity().getApplication(), DoWorkoutActivity.class);
-                        intent.putExtra(DoWorkoutActivity.EXTRA_PLAN_ID, Integer.valueOf(workout.getIdOfPlan()));
-                        intent.putExtra(DoWorkoutActivity.EXTRA_WORKOUT_ID, Integer.valueOf(workout.getId()));
-                        startActivityForResult(intent, DO_WORKOUT_REQUEST);
-                    });
-                }
-            });
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
+    private List<Calendar> getDisabledDays() {
+        Calendar firstDisabled = DateUtils.getCalendar();
+        firstDisabled.add(Calendar.DAY_OF_MONTH, 2);
+
+        Calendar secondDisabled = DateUtils.getCalendar();
+        secondDisabled.add(Calendar.DAY_OF_MONTH, 1);
+
+        Calendar thirdDisabled = DateUtils.getCalendar();
+        thirdDisabled.add(Calendar.DAY_OF_MONTH, 18);
+
+        List<Calendar> calendars = new ArrayList<>();
+        calendars.add(firstDisabled);
+        calendars.add(secondDisabled);
+        calendars.add(thirdDisabled);
+        return calendars;
+    }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == 1 && requestCode == 1) {
@@ -225,26 +211,12 @@ public class CalendarActivity extends Fragment {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Toast.makeText(getActivity().getApplication(), "Workout saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Workout saved", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getActivity().getApplication(), "Workout not saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Workout not saved", Toast.LENGTH_SHORT).show();
             }
-        } else if (requestCode == DO_WORKOUT_REQUEST && resultCode == 1) {
-            assert data != null;
-            int id = data.getIntExtra(DoWorkoutActivity.EXTRA_WORKOUT_ID, -1);
-            int idOfPlan = data.getIntExtra(DoWorkoutActivity.EXTRA_PLAN_ID, -1);
-
-            if (id == -1) {
-                Toast.makeText(getActivity().getApplication(), "Workout can't be updated", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            String date = mainViewModel.getTodayDate();
-            Workout workout = new Workout(idOfPlan, date, 1);
-            workout.setId(id);
-            workoutViewModel.update(workout);
-            Toast.makeText(getActivity().getApplication(), "Workout done", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(getActivity().getApplication(), "Workout not saved", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Workout not saved", Toast.LENGTH_SHORT).show();
         }
     }
 
