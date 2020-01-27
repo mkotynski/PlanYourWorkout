@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 public class DoWorkoutActivity extends AppCompatActivity {
 
     public static final String EXTRA_WORKOUT_ID = "com.mkt.plan4workout.EXTRA_WORKOUT_ID";
-    public static final String EXTRA_PLAN_ID = "com.mkt.plan4workout.EXTRA_WORKOUT_ID";
+    public static final String EXTRA_PLAN_ID = "com.mkt.plan4workout.EXTRA_PLAN_ID";
 
     ExerciseToPlanViewModel etpViewModel;
     DoWorkoutViewModel doWoViewModel;
@@ -70,6 +70,7 @@ public class DoWorkoutActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<DoWorkout> doWorkouts) {
                 List<Exercise> exerciseList = new ArrayList<>();
+                List<DoWorkout> doW = new ArrayList<>();
                 exerciseViewModel.getAllExercises().observe(DoWorkoutActivity.this, new Observer<List<Exercise>>() {
                     @Override
                     public void onChanged(List<Exercise> exercises) {
@@ -86,17 +87,19 @@ public class DoWorkoutActivity extends AppCompatActivity {
 
                         seriesViewModel.getAllWorkouts().observe(DoWorkoutActivity.this, new Observer<List<WorkoutSerie>>() {
                             List<List<WorkoutSerie>> listWSeries = new ArrayList<>();
-
                             @Override
                             public void onChanged(List<WorkoutSerie> workoutSeries) {
                                 listWSeries.removeAll(listWSeries);
+                                listWSeries.removeAll(doW);
                                 for (DoWorkout doWorkout : doWorkouts) {
                                     if(doWorkout.getWorkoutId() == idOfWorkout) {
+                                        doW.add(doWorkout);
                                         List<WorkoutSerie> wSeries = new ArrayList<>();
                                         for (WorkoutSerie workoutSerie : workoutSeries) {
                                             if (workoutSerie.getWorkoutId() == doWorkout.getId() && doWorkout.getExerciseId() == workoutSerie.getExerciseId()) {
-                                                if (!wSeries.contains(workoutSerie))
+                                                if (!wSeries.contains(workoutSerie)) {
                                                     wSeries.add(workoutSerie);
+                                                }
                                             }
                                         }
 
@@ -105,11 +108,12 @@ public class DoWorkoutActivity extends AppCompatActivity {
                                 }
 
                                 adapter.setSeriesWorkout(listWSeries);
+                                adapter.setDoWorkouts(doW);
                             }
                         });
                     }
                 });
-                adapter.setDoWorkouts(doWorkouts);
+
             }
         });
 

@@ -52,14 +52,17 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         List<WorkoutSerie> exWorkoutSeries = new ArrayList<>();
         for (List<WorkoutSerie> ws : seriesWorkout) {
             for (WorkoutSerie workoutSerie : ws) {
-                if (workoutSerie.getWorkoutId() == doWorkouts.get(position).getId()) {
-                    if (workoutSerie.getExerciseId() == exercises.get(position).getId()) {
-                        exWorkoutSeries.add(workoutSerie);
+                System.out.println(workoutSerie.getWorkoutId() + " = " + doWorkouts.get(position).getId());
+                for(DoWorkout dw : doWorkouts){
+                    if (workoutSerie.getWorkoutId() == dw.getId()) {
+                        if (workoutSerie.getExerciseId() == exercises.get(position).getId()) {
+                            if(!exWorkoutSeries.contains(workoutSerie)) exWorkoutSeries.add(workoutSerie);
+                        }
                     }
                 }
+
             }
         }
-
         if (exWorkoutSeries.size() > 0) {
             List<RepsAndKgTextView> series = new ArrayList<>();
             List<LinearLayout> serie = new ArrayList<>();

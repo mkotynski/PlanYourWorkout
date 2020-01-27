@@ -129,6 +129,10 @@ public class CalendarActivity extends Fragment {
                     intent.putExtra(WorkoutHistoryActivity.EXTRA_PLAN_ID, workout.getIdOfPlan());
                     plan = planViewModel.getxPlan(workout.getIdOfPlan());
                     intent.putExtra(WorkoutHistoryActivity.EXTRA_PLAN_NAME, plan.getName());
+                    System.out.println("Get history");
+                    System.out.println(workout.getId());
+                    System.out.println(workout.getIdOfPlan());
+                    System.out.println(plan.getName());
                     startActivity(intent);
                 } catch (ExecutionException e) {
                     e.printStackTrace();
@@ -191,8 +195,9 @@ public class CalendarActivity extends Fragment {
 
                     buttonDoWorkout.setOnClickListener(v -> {
                         Intent intent = new Intent(getActivity().getApplication(), DoWorkoutActivity.class);
-                        intent.putExtra(DoWorkoutActivity.EXTRA_PLAN_ID, Integer.valueOf(workout.getIdOfPlan()));
-                        intent.putExtra(DoWorkoutActivity.EXTRA_WORKOUT_ID, Integer.valueOf(workout.getId()));
+                        intent.putExtra(DoWorkoutActivity.EXTRA_PLAN_ID, workout.getIdOfPlan());
+                        intent.putExtra(DoWorkoutActivity.EXTRA_WORKOUT_ID, workout.getId());
+                        System.out.println(workout.getId());
                         startActivityForResult(intent, DO_WORKOUT_REQUEST);
                     });
                 }

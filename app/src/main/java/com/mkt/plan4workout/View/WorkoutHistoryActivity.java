@@ -55,6 +55,10 @@ public class WorkoutHistoryActivity extends AppCompatActivity {
         planId = intent.getIntExtra(EXTRA_PLAN_ID, -1);
         planName = intent.getStringExtra(EXTRA_PLAN_NAME);
 
+        System.out.println(workoutId);
+        System.out.println(planId);
+        System.out.println(planName);
+
         tvPlanName.setText(planName);
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view_do_workout);
@@ -75,6 +79,7 @@ public class WorkoutHistoryActivity extends AppCompatActivity {
                             if(doWorkout.getWorkoutId() == workoutId) {
                                 for (Exercise ex : exercises) {
                                     if (doWorkout.getExerciseId() == ex.getId()) {
+                                        System.out.println(ex.getName());
                                         if (!exerciseList.contains(ex)) exerciseList.add(ex);
                                     }
                                 }
@@ -93,12 +98,18 @@ public class WorkoutHistoryActivity extends AppCompatActivity {
                                         List<WorkoutSerie> wSeries = new ArrayList<>();
                                         for (WorkoutSerie workoutSerie : workoutSeries) {
                                             if (workoutSerie.getWorkoutId() == doWorkout.getId() && doWorkout.getExerciseId() == workoutSerie.getExerciseId()) {
-                                                if (!wSeries.contains(workoutSerie))
+                                                if (!wSeries.contains(workoutSerie)) {
                                                     wSeries.add(workoutSerie);
+                                                    System.out.println(workoutSerie.getId());
+                                                    System.out.println(workoutSerie.getExerciseId());
+                                                    System.out.println(workoutSerie.getReps());
+                                                    System.out.println(workoutSerie.getKg());
+                                                }
                                             }
                                         }
 
                                         listWSeries.add(wSeries);
+                                        System.out.println("size:" + listWSeries.size());
                                     }
                                 }
 
