@@ -1,8 +1,9 @@
-# PlanYourWorkout
+# StayStrong
 It is an application created as part of the subject at the university.
 This application is targeted at people exercising in the gym.
 Thanks to it, we are able to plan our training days to achieve the appropriate progress.</br>
-Functionalities: </br>
+
+## Functionalities: </br>
 *Adding training plans (fbw, push, pull, etc.) </br>
 *Adding exercises. </br>
 *Binding exercises to individual plans. </br>
